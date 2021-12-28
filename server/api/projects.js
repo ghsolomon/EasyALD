@@ -41,6 +41,7 @@ router.get('/:projectId/types', verifyPermissions, async (req, res, next) => {
   try {
     const types = await Type.findAll({
       where: { projectId: +req.params.projectId },
+      order: [['sortOrder', 'ASC']],
     });
     res.json(types);
   } catch (error) {
