@@ -4,7 +4,7 @@ const csv = require('csvtojson');
 
 const {
   db,
-  models: { User, Light, Project },
+  models: { User, Light, Project, Type },
 } = require('../server/db');
 
 // const SEED_DATA = JSON.parse(
@@ -20,15 +20,17 @@ async function seed() {
   await db.sync({ force: true }); // clears db and matches models to tables
   console.log('db synced!');
 
-  // Creating Users
-  const users = await Promise.all([
-    User.create({ username: 'cody', password: '123' }),
-    User.create({ username: 'murphy', password: '123' }),
-  ]);
-  console.log(`seeded ${users.length} users`);
+  // Seed PROJECT
+  const project = await Project.create({ name: 'Oklahoma' });
+  console.log(`seeded demo project`);
 
-  // Sync SEED_DATA
-  const SEED_DATA = await csv({
+  // Seed USER and associate PROJECT
+  const greg = await User.create({ username: 'greg', password: 'greg' });
+  await greg.addProject(project);
+  console.log(`seeded demo user`);
+
+  // Seed LIGHTS
+  const LIGHTS = await csv({
     colParser: {
       Load: 'number',
       'C#': 'number',
@@ -39,22 +41,45 @@ async function seed() {
     },
     ignoreEmpty: true,
   }).fromString(CSV);
-  // console.log(SEED_DATA[0]);
-  await Project.create({ name: 'Oklahoma' });
   await Promise.all(
-    SEED_DATA.map((light) => Light.create({ ...light, projectId: 1 }))
+    LIGHTS.map((light) => Light.create({ ...light, projectId: 1 }))
   );
-  // await Light.bulkCreate(SEED_DATA);
-  // console.log(SEED_DATA[2]);
-  console.log(`seeded ${SEED_DATA.length} data entries`);
+  console.log(`seeded ${LIGHTS.length} lights`);
+
+  const TYPES = [
+    {
+      name: 'work',
+      color: '#FF0000',
+    },
+    {
+      name: 'focus',
+      color: '#FF0000',
+    },
+    {
+      name: 'LW',
+      color: '#00FF00',
+    },
+    {
+      name: 'plot',
+      color: '#00FF00',
+    },
+    {
+      name: 'magic',
+      color: '#0000FF',
+    },
+    {
+      name: 'chart',
+      color: '#0000FF',
+    },
+  ];
+
+  await Promise.all(
+    TYPES.map((type) => Type.create({ ...type, projectId: 1 }))
+  );
+
+  console.log(`seeded ${TYPES.length} types`);
 
   console.log(`seeded successfully`);
-  return {
-    users: {
-      cody: users[0],
-      murphy: users[1],
-    },
-  };
 }
 
 async function runSeed() {

@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
+const Project = require('./Project');
 
 const SALT_ROUNDS = 5;
 
@@ -42,7 +43,7 @@ User.authenticate = async function ({ username, password }) {
 User.findByToken = async function (token) {
   try {
     const { id } = await jwt.verify(token, process.env.JWT);
-    const user = User.findByPk(id);
+    const user = User.findByPk(id, { include: Project });
     if (!user) {
       const error = Error('Invalid user');
       error.status = 401;

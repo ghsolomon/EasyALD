@@ -1,19 +1,8 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-// import { DataGrid } from '@mui/x-data-grid';
+import { connect } from 'react-redux';
 import DataGrid, { TextEditor } from 'react-data-grid';
 import axios from 'axios';
-
-// const columns = [
-//   { field: 'Ch', headerName: 'Channel', width: 70 },
-//   { field: 'Pur', headerName: 'Purpose', width: 130 },
-//   { field: 'lastName', headerName: 'Last name', width: 130 },
-//   {
-//     field: 'age',
-//     headerName: 'Age',
-//     type: 'number',
-//     width: 90,
-//   },
-// ];
+import { fetchLights } from '../../store';
 
 const columns = [
   {
@@ -70,53 +59,31 @@ const columns = [
   },
 ];
 
-// const LightsTable = () => {
-//   const [lights, setLights] = useState([]);
-//   useEffect(async () => {
-//     const { data: lights } = await axios.get('/api/projects/1/lights');
-//     setLights(lights);
-//   }, []);
-//   return (
-//     <div style={{ height: 400, width: '100%' }}>
-//       <DataGrid
-//         rows={lights}
-//         columns={columns}
-//         pageSize={5}
-//         rowsPerPageOptions={[5]}
-//         checkboxSelection
-//       ></DataGrid>
-//     </div>
-//   );
-// };
-
-const LightsTable = () => {
-  useEffect(async () => {
-    const { data: lights } = await axios.get('/api/projects/1/lights');
-    setLights(lights);
+const LightsTable = (props) => {
+  useEffect(() => {
+    props.fetchLights(props.match.params.projectId);
   }, []);
 
   const [sortColumns, setSortColumns] = useState([]);
-
-  const [lights, setLights] = useState([]);
 
   const onSortColumnsChange = useCallback((sortColumns) => {
     setSortColumns(sortColumns.slice(-1));
   }, []);
 
   const sortedRows = useMemo(() => {
-    if (sortColumns.length === 0) return lights;
+    if (sortColumns.length === 0) return props.lights;
     const { columnKey, direction } = sortColumns[0];
 
-    let sortedRows = [...lights];
+    const sortedRows = [...props.lights];
 
     switch (columnKey) {
       case 'Ch':
-        sortedRows = sortedRows.sort(
+        sortedRows.sort(
           (light1, light2) => Number(light1.Ch) - Number(light2.Ch)
         );
         break;
       case 'Pos':
-        sortedRows = sortedRows.sort((light1, light2) => {
+        sortedRows.sort((light1, light2) => {
           if (light1.PosOrd > light2.PosOrd) {
             return 1;
           } else if (light1.PosOrd < light2.PosOrd) {
@@ -129,7 +96,7 @@ const LightsTable = () => {
       default:
     }
     return direction === 'DESC' ? sortedRows.reverse() : sortedRows;
-  }, [lights, sortColumns]);
+  }, [props.lights, sortColumns]);
 
   return (
     <DataGrid
@@ -141,4 +108,12 @@ const LightsTable = () => {
   );
 };
 
-export default LightsTable;
+const mapState = (state) => ({
+  lights: state.lights,
+});
+
+const mapDispatch = (dispatch) => ({
+  fetchLights: (projectId) => dispatch(fetchLights(projectId)),
+});
+
+export default connect(mapState, mapDispatch)(LightsTable);

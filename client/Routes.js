@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { Login, Signup } from './components/AuthForm';
 import Home from './components/Home';
-import { LightsTable } from './components/Lights/index';
+import { LightsTable } from './components/Lights';
+import { TypesForm } from './components/Notes';
 import { getUser } from './store';
 
 class Routes extends React.Component {
@@ -19,6 +20,8 @@ class Routes extends React.Component {
         {isLoggedIn ? (
           <Switch>
             <Route path="/home" component={Home} />
+            <Route path="/projects/:projectId/lights" component={LightsTable} />
+            <Route path="/projects/:projectId/types" component={TypesForm} />
             <Redirect to="/home" />
           </Switch>
         ) : (
@@ -26,7 +29,6 @@ class Routes extends React.Component {
             <Route path="/" exact component={Login} />
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
-            <Route path="/lights" component={LightsTable} />
           </Switch>
         )}
       </div>
