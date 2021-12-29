@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { connect } from 'react-redux';
-import { fetchTypes, addType, updateTypes } from '../../store';
+import { fetchTypes, addType, updateTypes, deleteType } from '../../store';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 
@@ -23,12 +23,7 @@ const TypesForm = (props) => {
     setTypes(props.types);
   }, [props.types]);
 
-  useEffect(() => {
-    console.log(types);
-  }, [types]);
-
   const handleOnDragEnd = (result) => {
-    console.log(types);
     const items = types.slice();
     const [reorderedType] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedType);
@@ -38,17 +33,21 @@ const TypesForm = (props) => {
   // Save changes
   const handleSaveChanges = (evt) => {
     evt.preventDefault();
-    props.updateTypes(props.match.params.projectId, types);
+    props.updateTypes(types);
   };
 
   // Add new type
-  const defaultNewType = { name: '', color: '#FFFFFF' };
+  const defaultNewType = {
+    name: '',
+    color: '#FFFFFF',
+    projectId: +props.match.params.projectId,
+  };
 
   const [newType, setNewType] = useState(defaultNewType);
 
   const handleAddType = (evt) => {
     evt.preventDefault();
-    props.addType(props.match.params.projectId, {
+    props.addType({
       ...newType,
       sortOrder: types.length,
     });
@@ -101,7 +100,12 @@ const TypesForm = (props) => {
                             })
                           }
                         />
-                        <button>Delete</button>
+                        <button
+                          type="button"
+                          onClick={() => props.deleteType(type)}
+                        >
+                          Delete
+                        </button>
                       </fieldset>
                     )}
                   </Draggable>
@@ -143,8 +147,9 @@ const mapState = (state) => ({ types: state.types });
 
 const mapDispatch = (dispatch) => ({
   fetchTypes: (projectId) => dispatch(fetchTypes(projectId)),
-  addType: (projectId, type) => dispatch(addType(projectId, type)),
-  updateTypes: (projectId, types) => dispatch(updateTypes(projectId, types)),
+  addType: (type) => dispatch(addType(type)),
+  updateTypes: (types) => dispatch(updateTypes(types)),
+  deleteType: (type) => dispatch(deleteType(type)),
 });
 
 export default connect(mapState, mapDispatch)(TypesForm);

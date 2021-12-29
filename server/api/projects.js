@@ -15,7 +15,7 @@ const verifyPermissions = async (req, res, next) => {
       next();
     } else {
       const error = new Error(
-        'User does not have permission to view this project'
+        'User does not have permission to view / modify this project'
       );
       error.status = 401;
       next(error);
@@ -74,12 +74,12 @@ router.post('/:projectId/types', verifyPermissions, async (req, res, next) => {
 
 // PUT /api/projects/:projectId/types/:typeId
 router.put(
-  '/:projectId/types/:typeId',
+  '/:projectId/types/:id',
   verifyPermissions,
   async (req, res, next) => {
     try {
-      const { projectId, typeId } = req.params;
-      const typeToUpdate = await Type.findAll({ where: { projectId, typeId } });
+      const { projectId, id } = req.params;
+      const typeToUpdate = await Type.findOne({ where: { projectId, id } });
       if (!typeToUpdate) {
         const error = new Error('Type does not exist');
         error.status = 404;
@@ -140,6 +140,28 @@ router.put('/:projectId/types', verifyPermissions, async (req, res, next) => {
     }
   }
 });
+
+// DELETE /api/projects/:projectId/types/:typeId
+router.delete(
+  '/:projectId/types/:id',
+  verifyPermissions,
+  async (req, res, next) => {
+    try {
+      const { projectId, id } = req.params;
+      const typeToDelete = await Type.findOne({ where: { projectId, id } });
+      if (!typeToDelete) {
+        const error = new Error('Type does not exist');
+        error.status = 404;
+        next(error);
+      } else {
+        await typeToDelete.destroy();
+        res.sendStatus(204);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 // POST /api/projects
 router.post('/', (req, res, next) => {});
