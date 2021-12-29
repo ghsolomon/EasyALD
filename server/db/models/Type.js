@@ -6,8 +6,8 @@ const Type = db.define('type', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
-    notEmpty: true,
+    unique: 'compositeIndex',
+    validate: { notEmpty: true },
   },
   color: {
     type: Sequelize.STRING,
@@ -17,6 +17,10 @@ const Type = db.define('type', {
     type: Sequelize.INTEGER,
     defaultValue: 0,
     allowNull: false,
+  },
+  projectId: {
+    type: Sequelize.INTEGER,
+    unique: 'compositeIndex',
   },
 });
 

@@ -50,26 +50,32 @@ async function seed() {
     {
       name: 'work',
       color: '#FF0000',
+      sortOrder: 0,
     },
     {
       name: 'focus',
       color: '#FF0000',
+      sortOrder: 1,
     },
     {
       name: 'LW',
       color: '#00FF00',
+      sortOrder: 2,
     },
     {
       name: 'plot',
       color: '#00FF00',
+      sortOrder: 3,
     },
     {
       name: 'magic',
       color: '#0000FF',
+      sortOrder: 4,
     },
     {
       name: 'chart',
       color: '#0000FF',
+      sortOrder: 5,
     },
   ];
 
