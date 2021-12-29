@@ -1,0 +1,18 @@
+.dialog-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.dialog-container > dialog {
+  width: 300px;
+}
+.dialog-container > dialog > input {
+    width: 100%;
+}
+
+.dialog-container > dialog > menu {
+    text-align: right;
+}
