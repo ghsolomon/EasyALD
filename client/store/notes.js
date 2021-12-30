@@ -13,7 +13,7 @@ export const fetchNotes = (projectId) => async (dispatch) => {
 };
 
 // reducer:
-const initialState = [{ priority: 1 }];
+const initialState = [];
 const notes = (state = initialState, action) => {
   switch (action.type) {
     case SET_NOTES:

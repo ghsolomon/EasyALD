@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import DataGrid from 'react-data-grid';
 import { fetchNotes, fetchTypes } from '../../store';
 import { createPortal } from 'react-dom';
-import './styles.css';
 
 const NotesTable = (props) => {
   const [typeColumns, setTypeColumns] = useState([]);

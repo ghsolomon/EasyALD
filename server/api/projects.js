@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {
   db,
-  models: { Light, Type },
+  models: { Light, Type, Note, NotesType },
 } = require('../db');
 
 // Verify permissions middleware
@@ -24,6 +24,21 @@ const verifyPermissions = async (req, res, next) => {
     next(error);
   }
 };
+
+// GET /api/projects/:projectId/notes
+router.get('/:projectId/notes', verifyPermissions, async (req, res, next) => {
+  try {
+    console.log(Note.associations);
+    const notes = await Note.findAll({
+      where: { projectId: +req.params.projectId },
+      include: [{ model: NotesType, include: [Type] }, Light],
+      order: [[Note.associations.lights, 'PosOrd']],
+    });
+    res.json(notes);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // GET /api/projects/:projectId/lights
 router.get('/:projectId/lights', verifyPermissions, async (req, res, next) => {

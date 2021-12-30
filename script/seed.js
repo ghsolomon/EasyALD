@@ -4,7 +4,7 @@ const csv = require('csvtojson');
 
 const {
   db,
-  models: { User, Light, Project, Type },
+  models: { User, Light, Project, Type, Note },
 } = require('../server/db');
 
 // const SEED_DATA = JSON.parse(
@@ -41,10 +41,12 @@ async function seed() {
     },
     ignoreEmpty: true,
   }).fromString(CSV);
-  await Promise.all(
+  const seededLights = await Promise.all(
     LIGHTS.map((light) => Light.create({ ...light, projectId: 1 }))
   );
-  console.log(`seeded ${LIGHTS.length} lights`);
+  console.log(`seeded ${seededLights.length} lights`);
+
+  // Seed types
 
   const TYPES = [
     {
@@ -79,11 +81,38 @@ async function seed() {
     },
   ];
 
-  await Promise.all(
+  const seededTypes = await Promise.all(
     TYPES.map((type) => Type.create({ ...type, projectId: 1 }))
   );
 
-  console.log(`seeded ${TYPES.length} types`);
+  console.log(`seeded ${seededTypes.length} types`);
+
+  // Seed notes
+  const NOTES = [
+    { description: 'This is an example note' },
+    { description: 'This is another example note' },
+    { description: 'This is another example note with no lights attached' },
+  ];
+
+  const seededNotes = await Promise.all(
+    NOTES.map((note) => Note.create({ ...note, projectId: 1 }))
+  );
+
+  console.log(`seeded ${seededNotes.length} notes`);
+
+  // Associate notes:
+  for (let note of seededNotes) {
+    if (note.id === 3) break;
+    const randomTimes = Math.ceil(Math.random() * 5);
+    for (let i = 0; i < randomTimes; i++) {
+      const randomType =
+        seededTypes[Math.floor(Math.random() * seededTypes.length)];
+      const randomLight =
+        seededLights[Math.floor(Math.random() * seededLights.length)];
+      await note.addType(randomType);
+      await note.addLight(randomLight);
+    }
+  }
 
   console.log(`seeded successfully`);
 }

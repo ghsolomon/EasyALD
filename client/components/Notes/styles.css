@@ -16,3 +16,10 @@
 .dialog-container > dialog > menu {
     text-align: right;
 }
+
+.notecard {
+  background-color: #FFFFFF;
+  border: 1px solid black;
+  border-radius: 25px;
+  padding: 1rem;
+}
