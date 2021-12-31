@@ -1,8 +1,9 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import NoteCard from './NoteCard';
 import { connect } from 'react-redux';
 import { fetchNotes, fetchTypes } from '../../store';
-import { Stack } from '@mui/material';
+import { Modal, Stack } from '@mui/material';
+import { EditNoteModal } from '.';
 
 class SingleNote {
   constructor(light, note) {
@@ -56,12 +57,33 @@ const Notes = (props) => {
     }
   }
 
+  const [selectedNote, setSelectedNote] = useState(null);
+  const handleCloseEditModal = () => setSelectedNote(null);
+  const handleEditNote = (note) => setSelectedNote(note);
+
   return (
-    <Stack spacing={2}>
-      {props.notes.map((note) => (
-        <NoteCard key={note.id} {...note} />
-      ))}
-    </Stack>
+    <>
+      <Stack spacing={2}>
+        {props.notes.map((note) => (
+          <NoteCard
+            key={note.id}
+            {...note}
+            handleEditNote={() => handleEditNote(note)}
+          />
+        ))}
+      </Stack>
+
+      <Modal
+        open={!!selectedNote}
+        onClose={handleCloseEditModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div>
+          <EditNoteModal {...selectedNote} />
+        </div>
+      </Modal>
+    </>
   );
 };
 

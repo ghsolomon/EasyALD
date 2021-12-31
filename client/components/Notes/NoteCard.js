@@ -50,6 +50,7 @@ const NoteCard = (props) => {
             }
           />
         ))}
+        <button onClick={props.handleEditNote}>EDIT</button>
       </Grid>
       <Grid item></Grid>
       <div>{props.description}</div>
