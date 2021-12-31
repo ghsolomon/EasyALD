@@ -22,7 +22,7 @@ class Routes extends React.Component {
             <Route path="/home" component={Home} />
             <Route path="/projects/:projectId/lights" component={LightsTable} />
             <Route path="/projects/:projectId/types" component={TypesForm} />
-            <Route path="/projects/:projectId/notes" component={NotesTable} />
+            <Route path="/projects/:projectId/notes" component={Notes} />
             <Redirect to="/home" />
           </Switch>
         ) : (

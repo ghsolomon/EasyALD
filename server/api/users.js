@@ -5,6 +5,7 @@ const {
 
 // GET /api/users
 router.get('/', async (req, res, next) => {
+  console.log(req.params.userId);
   try {
     const users = await User.findAll({ attributes: ['id', 'username'] });
     res.json(users);
