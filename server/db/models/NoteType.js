@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../db');
 
 // model definition:
-const NotesType = db.define('notesType', {
+const NoteType = db.define('noteType', {
   isComplete: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
@@ -19,4 +19,4 @@ const NotesType = db.define('notesType', {
 // hooks:
 
 // export:
-module.exports = NotesType;
+module.exports = NoteType;

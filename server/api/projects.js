@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {
   db,
-  models: { Light, Type, Note, NotesType, Project },
+  models: { Light, Type, Note, NoteType, Project },
 } = require('../db');
 
 // Verify permissions middleware
@@ -35,7 +35,7 @@ router.get('/:projectId/notes', verifyPermissions, async (req, res, next) => {
   try {
     const notes = await Note.findAll({
       where: { projectId: +req.params.projectId },
-      include: [{ model: NotesType, include: [Type] }, Light],
+      include: [{ model: NoteType, include: [Type] }, Light],
       order: [[Note.associations.lights, 'PosOrd']],
     });
     res.json(notes);
@@ -203,7 +203,7 @@ router.post(
     try {
       const note = await Note.findOne({
         where: { id: noteId, projectId: projectId },
-        include: [NotesType],
+        include: [NoteType],
       });
       const type = await Type.findOne({
         where: { id: req.body.typeId, projectId },
@@ -214,11 +214,11 @@ router.post(
         next(error);
       } else {
         await note.addType(type);
-        const notesTypes = await NotesType.findAll({
+        const noteTypes = await NoteType.findAll({
           where: { noteId },
           include: [Type],
         });
-        res.json(notesTypes);
+        res.json(noteTypes);
       }
     } catch (error) {
       next(error);
@@ -233,18 +233,18 @@ router.put(
   async (req, res, next) => {
     const { projectId, noteId, typeId } = req.params;
     try {
-      const notesType = await NotesType.findOne({
+      const noteType = await NoteType.findOne({
         where: { noteId, typeId },
         include: [{ model: Type, where: { projectId } }],
       });
-      if (!notesType) {
+      if (!noteType) {
         const error = new Error('Not found');
         error.status = 404;
         next(error);
       } else {
-        notesType.isComplete = req.body.isComplete;
-        await notesType.save();
-        res.json(notesType);
+        noteType.isComplete = req.body.isComplete;
+        await noteType.save();
+        res.json(noteType);
       }
     } catch (error) {
       next(error);

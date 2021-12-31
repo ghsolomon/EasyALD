@@ -11,7 +11,7 @@ const NoteCard = (props) => {
   );
 
   const typeStatus = {};
-  for (let type of props.notesTypes) {
+  for (let type of props.noteTypes) {
     typeStatus[type.typeId] = type.isComplete ? 'complete' : 'assigned';
   }
 

@@ -8,9 +8,9 @@ const SET_TYPE_STATUS = 'SET_TYPE_STATUS';
 
 // action creators:
 const _setNotes = (notes) => ({ type: SET_NOTES, notes });
-const _addType = (notesTypes) => ({
+const _addType = (noteTypes) => ({
   type: ADD_TYPE,
-  notesTypes,
+  noteTypes,
 });
 const _removeType = (noteId, typeId) => ({ type: REMOVE_TYPE, noteId, typeId });
 const _setTypeStatus = (noteId, typeId, isComplete) => ({
@@ -33,11 +33,11 @@ export const fetchNotes = (projectId) => async (dispatch) => {
 export const addTypeToNote =
   (projectId, noteId, typeId) => async (dispatch) => {
     try {
-      const { data: notesTypes } = await axios.post(
+      const { data: noteTypes } = await axios.post(
         `/api/projects/${projectId}/notes/${noteId}/types`,
         { typeId }
       );
-      dispatch(_addType(notesTypes));
+      dispatch(_addType(noteTypes));
     } catch (error) {
       console.log(error.response.status, error.response.data);
     }
@@ -80,18 +80,18 @@ const notes = (state = initialState, action) => {
           ? note
           : {
               ...note,
-              notesTypes: note.notesTypes.map((notesType) =>
-                notesType.typeId !== action.typeId
-                  ? notesType
-                  : { ...notesType, isComplete: action.isComplete }
+              noteTypes: note.noteTypes.map((noteType) =>
+                noteType.typeId !== action.typeId
+                  ? noteType
+                  : { ...noteType, isComplete: action.isComplete }
               ),
             }
       );
     case ADD_TYPE:
       return state.map((note) =>
-        note.id !== action.notesTypes[0].noteId
+        note.id !== action.noteTypes[0].noteId
           ? note
-          : { ...note, notesTypes: action.notesTypes }
+          : { ...note, noteTypes: action.noteTypes }
       );
     case REMOVE_TYPE:
       return state.map((note) =>
@@ -99,8 +99,8 @@ const notes = (state = initialState, action) => {
           ? note
           : {
               ...note,
-              notesTypes: note.notesTypes.filter(
-                (notesType) => notesType.typeId !== action.typeId
+              noteTypes: note.noteTypes.filter(
+                (noteType) => noteType.typeId !== action.typeId
               ),
             }
       );
