@@ -37,6 +37,8 @@
     "@babel/preset-react": "^7.16.0",
     "@babel/register": "^7.16.0",
     "@babel/runtime": "^7.16.3",
+    "@ckeditor/ckeditor5-build-balloon": "^31.1.0",
+    "@ckeditor/ckeditor5-react": "^3.0.3",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.5",

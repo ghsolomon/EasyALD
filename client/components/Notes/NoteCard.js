@@ -4,6 +4,9 @@ import { stringifyChannelList } from '../../utils/helpers';
 import { Grid, FormControlLabel, Checkbox } from '@mui/material';
 import { addTypeToNote, removeTypeFromNote, setTypeStatus } from '../../store';
 
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
+
 const NoteCard = (props) => {
   const positions = [...new Set(props.lights.map((light) => light.Pos))];
   const channels = stringifyChannelList(
@@ -53,6 +56,37 @@ const NoteCard = (props) => {
         <button onClick={props.handleEditNote}>EDIT</button>
       </Grid>
       <Grid item></Grid>
+
+      <CKEditor
+        editor={BalloonEditor}
+        data={props.description}
+        config={{
+          toolbar: [
+            'bold',
+            'italic',
+            'undo',
+            'redo',
+            'numberedList',
+            'bulletedList',
+          ],
+        }}
+        onReady={(editor) => {
+          // You can store the "editor" and use when it is needed.
+          console.log('Editor is ready to use!', editor);
+        }}
+        onChange={(event, editor) => {
+          const data = editor.getData();
+          console.log({ event, editor, data });
+        }}
+        onBlur={(event, editor) => {
+          console.log('Blur.', editor);
+          console.log(editor.getData());
+        }}
+        onFocus={(event, editor) => {
+          console.log('Focus.', editor);
+        }}
+      />
+
       <div>{props.description}</div>
       <div>Position: {positions.join(', ')}</div>
       <div>Channel: {channels}</div>
