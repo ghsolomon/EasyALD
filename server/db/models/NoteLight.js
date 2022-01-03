@@ -2,16 +2,11 @@ const Sequelize = require('sequelize');
 const db = require('../db');
 
 // model definition:
-const NoteType = db.define('noteType', {
+const NoteLight = db.define('noteLight', {
   id: {
     type: Sequelize.DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-    allowNull: false,
-  },
-  isComplete: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false,
     allowNull: false,
   },
 });
@@ -25,4 +20,4 @@ const NoteType = db.define('noteType', {
 // hooks:
 
 // export:
-module.exports = NoteType;
+module.exports = NoteLight;

@@ -21,19 +21,20 @@ export const stringifyChannelList = (channelList) => {
   let currentVal = channelList[0];
   let inRange = false;
   for (let i = 1; i < channelList.length; i++) {
-    if (channelList[i] === currentVal) break;
-    if (channelList[i] !== currentVal + 1) {
-      if (inRange) {
-        returnStr += ch`-${currentVal}`;
-        inRange = false;
+    if (channelList[i] !== currentVal) {
+      if (channelList[i] !== currentVal + 1) {
+        if (inRange) {
+          returnStr += ch`-${currentVal}`;
+          inRange = false;
+        }
+        returnStr += ch`, ${channelList[i]}`;
+      } else if (i === channelList.length - 1) {
+        returnStr += ch`-${channelList[i]}`;
+      } else {
+        inRange = true;
       }
-      returnStr += ch`, ${channelList[i]}`;
-    } else if (i === channelList.length - 1) {
-      returnStr += ch`-${channelList[i]}`;
-    } else {
-      inRange = true;
+      currentVal = channelList[i];
     }
-    currentVal = channelList[i];
   }
   return returnStr;
 };

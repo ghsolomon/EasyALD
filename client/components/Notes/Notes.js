@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import NoteCard from './NoteCard';
 import { connect } from 'react-redux';
 import { fetchNotes, fetchTypes } from '../../store';
-import { Modal, Stack } from '@mui/material';
+import { Modal } from '@mui/material';
 import { EditNoteModal } from '.';
 
 class SingleNote {
@@ -63,7 +63,7 @@ const Notes = (props) => {
 
   return (
     <>
-      <Stack spacing={2}>
+      <div className="notecards-container">
         {props.notes.map((note) => (
           <NoteCard
             key={note.id}
@@ -71,8 +71,7 @@ const Notes = (props) => {
             handleEditNote={() => handleEditNote(note)}
           />
         ))}
-      </Stack>
-
+      </div>
       <Modal
         open={!!selectedNote}
         onClose={handleCloseEditModal}

@@ -37,5 +37,13 @@ describe('helpers', () => {
       expect(stringifyChannelList(list3)).to.equal('(1)-(3), (12), (14)-(16)');
       expect(stringifyChannelList(list4)).to.equal('(1)-(3), (12), (15)');
     });
+    it('should convert a range of channels with nulls', () => {
+      const list = [null, null, 201, 289];
+      expect(stringifyChannelList(list)).to.equal('(X), (201), (289)');
+    });
+    it('should convert a range of channels with duplicates', () => {
+      const list = [201, 201, 202, 202, 204];
+      expect(stringifyChannelList(list)).to.equal('(201)-(202), (204)');
+    });
   });
 });

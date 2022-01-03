@@ -17,9 +17,76 @@
     text-align: right;
 }
 
+/* Div containing all note cards */
+.notecards-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  row-gap: 20px;
+  align-items: center;
+}
+
+/* Individual Note cards */
+
 .notecard {
+  border: 1px solid #444444;
+  border-radius: 10px;
+  max-width: 800px;
+  min-width: 75%;
+}
+
+.notecard-header {
+  background-color: #444444;
+  border-radius: 8px 8px 0 0;
+  padding: 0.5rem;
+}
+
+.notecard-header-info {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  row-gap: 0.25rem;
+}
+
+.notecard-positions {
+  font-size: large;
+  font-weight:800;
+
+}
+
+.notecard-channels {
+
+}
+
+.note-lights-table {
+  max-height: 125px;
+}
+
+.notecard-types {
+  /* background-color: #222222; */
+  border-top: 1px solid #444444;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.8rem;
+  padding: 0.5rem;
+}
+
+
+
+/* .notecard {
   background-color: #FFFFFF;
   border: 1px solid black;
   border-radius: 25px;
   padding: 1rem;
-}
+} */
+
+/* .type-checkbox-container {
+  display: flex;
+} */
+/*
+
+.ck-editor__editable_inline { width: 100% } */
+
+/* .note-channels {
+  background-color: red;
+  width: 10rem;
+} */
