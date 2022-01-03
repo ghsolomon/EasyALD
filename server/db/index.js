@@ -6,8 +6,7 @@ const Project = require('./models/Project');
 const Light = require('./models/Light');
 const Type = require('./models/Type');
 const Note = require('./models/Note');
-const NoteType = require('./models/NoteType');
-const NoteLight = require('./models/NoteLight');
+const { NoteLight, NoteType } = require('./models/NoteLight_NoteType');
 const NoteLightType = require('./models/NoteLightType');
 
 // associate models:
