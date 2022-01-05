@@ -49,13 +49,13 @@ const Notes = (props) => {
   //   dispatch(setNotes(props.notes));
   // }, [props.notes]);
 
-  const rippleNotes = [];
-  for (let note of props.notes) {
-    if (!note.lights.length) rippleNotes.push(new SingleNote({}, note));
-    for (let light of note.lights) {
-      rippleNotes.push(new SingleNote(light, note));
-    }
-  }
+  // const rippleNotes = [];
+  // for (let note of props.notes) {
+  //   if (!note.lights.length) rippleNotes.push(new SingleNote({}, note));
+  //   for (let light of note.lights) {
+  //     rippleNotes.push(new SingleNote(light, note));
+  //   }
+  // }
 
   const [selectedNote, setSelectedNote] = useState(null);
   const handleCloseEditModal = () => setSelectedNote(null);

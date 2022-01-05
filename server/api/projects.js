@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {
   db,
-  models: { Light, Type, Note, NoteType, Project },
+  models: { Light, Type, Note, NoteType, Project, NoteLightType, NoteLight },
 } = require('../db');
 
 // Verify permissions middleware
@@ -33,12 +33,7 @@ const verifyPermissions = async (req, res, next) => {
 // GET /api/projects/:projectId/notes
 router.get('/:projectId/notes', verifyPermissions, async (req, res, next) => {
   try {
-    const notes = await Note.findAll({
-      where: { projectId: +req.params.projectId },
-      include: [{ model: NoteType, include: [Type] }, Light],
-      order: [[Note.associations.lights, 'PosOrd']],
-    });
-    res.json(notes);
+    res.json(await Note.findByProjectId(+req.params.projectId));
   } catch (error) {
     next(error);
   }
@@ -51,10 +46,7 @@ router.get('/:projectId/notes', verifyPermissions, async (req, res, next) => {
 // GET /api/projects/:projectId/lights
 router.get('/:projectId/lights', verifyPermissions, async (req, res, next) => {
   try {
-    const lights = await Light.findAll({
-      where: { projectId: +req.params.projectId },
-    });
-    res.json(lights);
+    res.json(await Light.findByProjectId(+req.params.projectId));
   } catch (error) {
     next(error);
   }
@@ -67,11 +59,7 @@ router.get('/:projectId/lights', verifyPermissions, async (req, res, next) => {
 // GET /api/projects/:projectId/types
 router.get('/:projectId/types', verifyPermissions, async (req, res, next) => {
   try {
-    const types = await Type.findAll({
-      where: { projectId: +req.params.projectId },
-      order: [['sortOrder', 'ASC']],
-    });
-    res.json(types);
+    res.json(await Type.findByProjectId(+req.params.projectId));
   } catch (error) {
     next(error);
   }
@@ -201,24 +189,21 @@ router.post(
   async (req, res, next) => {
     const { projectId, noteId } = req.params;
     try {
-      const note = await Note.findOne({
-        where: { id: noteId, projectId: projectId },
-        include: [NoteType],
-      });
-      const type = await Type.findOne({
-        where: { id: req.body.typeId, projectId },
-      });
+      const [note, type] = await Promise.all([
+        Note.findOne({
+          where: { id: noteId, projectId: projectId },
+        }),
+        Type.findOne({
+          where: { id: req.body.typeId, projectId },
+        }),
+      ]);
       if (!note || !type) {
         const error = new Error('Not found');
         error.status = 404;
         next(error);
       } else {
         await note.addType(type);
-        const noteTypes = await NoteType.findAll({
-          where: { noteId },
-          include: [Type],
-        });
-        res.json(noteTypes);
+        res.json(await Note.findById(note.id));
       }
     } catch (error) {
       next(error);
@@ -271,6 +256,47 @@ router.delete(
         await note.removeType(typeId);
         res.sendStatus(204);
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * NOTE LIGHT ROUTES
+ */
+
+// PUT /api/projects/:projectId/notes/:noteId/lights/:lightId/types/:typeId
+router.put(
+  '/:projectId/notes/:noteId/lights/:lightId/types/:typeId',
+  verifyPermissions,
+  async (req, res, next) => {
+    const { projectId, noteId, lightId, typeId } = req.params;
+    try {
+      const note = await Note.findOne({
+        where: {
+          projectId,
+          id: noteId,
+        },
+        include: [
+          {
+            model: NoteLight,
+            where: { lightId },
+            include: [
+              {
+                model: NoteLightType,
+                include: [{ model: NoteType, where: { typeId } }],
+              },
+            ],
+          },
+        ],
+      });
+
+      const noteLightType = note.noteLights[0].noteLightTypes[0];
+      noteLightType.isComplete = req.body.isComplete;
+
+      await noteLightType.save();
+      res.json(await Note.findById(noteId));
     } catch (error) {
       next(error);
     }

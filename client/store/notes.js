@@ -2,15 +2,15 @@ import axios from 'axios';
 
 // action types:
 const SET_NOTES = 'SET_NOTES';
-const ADD_TYPE = 'ADD_TYPE_TO_NOTE';
+const UPDATE_NOTE = 'UPDATE_NOTE';
 const REMOVE_TYPE = 'REMOVE_TYPE_FROM_NOTE';
 const SET_TYPE_STATUS = 'SET_TYPE_STATUS';
 
 // action creators:
 const _setNotes = (notes) => ({ type: SET_NOTES, notes });
-const _addType = (noteTypes) => ({
-  type: ADD_TYPE,
-  noteTypes,
+const _updateNote = (note) => ({
+  type: UPDATE_NOTE,
+  note,
 });
 const _removeType = (noteId, typeId) => ({ type: REMOVE_TYPE, noteId, typeId });
 const _setTypeStatus = (noteId, typeId, isComplete) => ({
@@ -33,11 +33,11 @@ export const fetchNotes = (projectId) => async (dispatch) => {
 export const addTypeToNote =
   (projectId, noteId, typeId) => async (dispatch) => {
     try {
-      const { data: noteTypes } = await axios.post(
+      const { data: note } = await axios.post(
         `/api/projects/${projectId}/notes/${noteId}/types`,
         { typeId }
       );
-      dispatch(_addType(noteTypes));
+      dispatch(_updateNote(note));
     } catch (error) {
       console.log(error.response.status, error.response.data);
     }
@@ -68,6 +68,19 @@ export const setTypeStatus =
     }
   };
 
+export const setNoteLightTypeComplete =
+  (projectId, noteId, lightId, typeId, isComplete) => async (dispatch) => {
+    try {
+      const { data: note } = await axios.put(
+        `/api/projects/${projectId}/notes/${noteId}/lights/${lightId}/types/${typeId}`,
+        { isComplete }
+      );
+      dispatch(_updateNote(note));
+    } catch (error) {
+      console.log(error.response.status, error.response.data);
+    }
+  };
+
 // reducer:
 const initialState = [];
 const notes = (state = initialState, action) => {
@@ -87,11 +100,9 @@ const notes = (state = initialState, action) => {
               ),
             }
       );
-    case ADD_TYPE:
+    case UPDATE_NOTE:
       return state.map((note) =>
-        note.id !== action.noteTypes[0].noteId
-          ? note
-          : { ...note, noteTypes: action.noteTypes }
+        note.id !== action.note.id ? note : action.note
       );
     case REMOVE_TYPE:
       return state.map((note) =>

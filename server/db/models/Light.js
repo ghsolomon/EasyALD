@@ -46,7 +46,12 @@ const Light = db.define('light', {
 // ModelTemplate.prototype.methodName = function () {};
 
 // class methods:
-// ModelTemplate.methodName = () => {};
+Light.findByProjectId = async function (projectId) {
+  const lights = await Light.findAll({
+    where: { projectId },
+  });
+  return lights;
+};
 
 // hooks:
 

@@ -6,19 +6,32 @@ import { addTypeToNote, removeTypeFromNote, setTypeStatus } from '../../store';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
-import NoteLights from './NoteLights';
+import NoteLightsTable from './NoteLightsTable';
 
 const NoteCard = (props) => {
-  const positions = [...new Set(props.lights.map((light) => light.Pos))].join(
-    ', '
-  );
+  const positions = [
+    ...new Set(props.noteLights.map((noteLight) => noteLight.light.Pos)),
+  ].join(', ');
   const channels = stringifyChannelList(
-    props.lights.map((light) => light.Ch).sort((a, b) => +a - +b)
+    props.noteLights
+      .map((noteLight) => noteLight.light.Ch)
+      .sort((a, b) => +a - +b)
   );
+
+  const [COMPLETE, PARTIALLY_COMPLETE, ASSIGNED] = [
+    'COMPLETE',
+    'PARTIALLY_COMPLETE',
+    'ASSIGNED',
+  ];
 
   const typeStatus = {};
   for (let type of props.noteTypes) {
-    typeStatus[type.typeId] = type.isComplete ? 'complete' : 'assigned';
+    console.log(type.isComplete);
+    typeStatus[type.typeId] = type.isComplete
+      ? COMPLETE
+      : type.isPartiallyComplete
+      ? PARTIALLY_COMPLETE
+      : ASSIGNED;
   }
 
   const [showLights, setShowLights] = useState(false);
@@ -68,7 +81,11 @@ const NoteCard = (props) => {
       <div className="notecard-lights">
         <button onClick={() => setShowLights(!showLights)}>Show lights</button>
         <Collapse in={showLights}>
-          <NoteLights lights={props.lights} />
+          <NoteLightsTable
+            noteLights={props.noteLights}
+            noteTypes={props.noteTypes}
+            projectId={props.projectId}
+          />
         </Collapse>
       </div>
 
@@ -79,21 +96,22 @@ const NoteCard = (props) => {
             label={type.name}
             control={
               <Checkbox
-                checked={typeStatus[type.id] === 'complete'}
-                indeterminate={typeStatus[type.id] === 'assigned'}
+                checked={typeStatus[type.id] === COMPLETE}
+                indeterminate={typeStatus[type.id] === PARTIALLY_COMPLETE}
                 onChange={() => {
-                  if (typeStatus[type.id] === 'assigned') {
-                    props.setTypeStatus(
-                      props.projectId,
-                      props.id,
-                      type.id,
-                      true
-                    );
-                  } else if (typeStatus[type.id] === 'complete') {
-                    props.removeType(props.projectId, props.id, type.id);
-                  } else {
-                    props.addType(props.projectId, props.id, type.id);
-                  }
+                  props.setTypeStatus(props.projectId, props.id, type.id, true);
+                  // if (typeStatus[type.id] === 'assigned') {
+                  //   props.setTypeStatus(
+                  //     props.projectId,
+                  //     props.id,
+                  //     type.id,
+                  //     true
+                  //   );
+                  // } else if (typeStatus[type.id] === 'complete') {
+                  //   props.removeType(props.projectId, props.id, type.id);
+                  // } else {
+                  //   props.addType(props.projectId, props.id, type.id);
+                  // }
                 }}
                 sx={{
                   color: type.color,

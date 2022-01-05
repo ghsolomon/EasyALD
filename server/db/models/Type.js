@@ -28,7 +28,13 @@ const Type = db.define('type', {
 // ModelTemplate.prototype.methodName = function () {};
 
 // class methods:
-// ModelTemplate.methodName = () => {};
+Type.findByProjectId = async function (projectId) {
+  const types = await this.findAll({
+    where: { projectId },
+    order: [['sortOrder', 'ASC']],
+  });
+  return types;
+};
 
 // hooks:
 

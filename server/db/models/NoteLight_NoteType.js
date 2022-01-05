@@ -20,10 +20,33 @@ const NoteType = db.define('noteType', {
     autoIncrement: true,
     allowNull: false,
   },
+  // isComplete: {
+  //   type: Sequelize.BOOLEAN,
+  //   defaultValue: false,
+  //   allowNull: false,
+  // },
   isComplete: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false,
-    allowNull: false,
+    type: Sequelize.VIRTUAL(Sequelize.BOOLEAN),
+    get() {
+      if (this.noteLightTypes) {
+        return !this.noteLightTypes.some(
+          (noteLightType) => !noteLightType.isComplete
+        );
+      }
+    },
+    set() {
+      console.log(this);
+    },
+  },
+  isPartiallyComplete: {
+    type: Sequelize.VIRTUAL(Sequelize.BOOLEAN),
+    get() {
+      if (this.noteLightTypes) {
+        return this.noteLightTypes.some(
+          (noteLightType) => noteLightType.isComplete
+        );
+      }
+    },
   },
 });
 

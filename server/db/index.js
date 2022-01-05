@@ -21,16 +21,27 @@ Project.hasMany(Type);
 
 Note.belongsTo(Project);
 Project.hasMany(Note);
+
 Note.belongsToMany(Light, { through: NoteLight });
 Light.belongsToMany(Note, { through: NoteLight });
+NoteLight.belongsTo(Note);
+NoteLight.belongsTo(Light);
+Note.hasMany(NoteLight);
+Light.hasMany(NoteLight);
+
 Note.belongsToMany(Type, { through: NoteType });
 Type.belongsToMany(Note, { through: NoteType });
 NoteType.belongsTo(Note);
+NoteType.belongsTo(Type);
 Note.hasMany(NoteType);
 Type.hasMany(NoteType);
-NoteType.belongsTo(Type);
+
 NoteLight.belongsToMany(NoteType, { through: NoteLightType });
 NoteType.belongsToMany(NoteLight, { through: NoteLightType });
+NoteLightType.belongsTo(NoteLight);
+NoteLightType.belongsTo(NoteType);
+NoteLight.hasMany(NoteLightType);
+NoteType.hasMany(NoteLightType);
 
 // export db and models:
 module.exports = {
