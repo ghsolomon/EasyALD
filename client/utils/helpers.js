@@ -1,3 +1,5 @@
+import tinycolor from 'tinycolor2';
+
 /**
  * Channel Template Tag
  * @param {[String]} strings
@@ -38,3 +40,13 @@ export const stringifyChannelList = (channelList) => {
   }
   return returnStr;
 };
+
+/**
+ * Returns white or black color based on which contrasts most with input color
+ * @param {String} color
+ * @returns {String} either #FFFFFF or #000000
+ */
+export const whiteOrBlack = (color) =>
+  tinycolor(color).isValid() && tinycolor(color).isDark()
+    ? '#FFFFFF'
+    : '#000000';

@@ -4,7 +4,6 @@ import axios from 'axios';
 const SET_NOTES = 'SET_NOTES';
 const UPDATE_NOTE = 'UPDATE_NOTE';
 const REMOVE_TYPE = 'REMOVE_TYPE_FROM_NOTE';
-const SET_TYPE_STATUS = 'SET_TYPE_STATUS';
 
 // action creators:
 const _setNotes = (notes) => ({ type: SET_NOTES, notes });
@@ -13,12 +12,6 @@ const _updateNote = (note) => ({
   note,
 });
 const _removeType = (noteId, typeId) => ({ type: REMOVE_TYPE, noteId, typeId });
-const _setTypeStatus = (noteId, typeId, isComplete) => ({
-  type: SET_TYPE_STATUS,
-  noteId,
-  typeId,
-  isComplete,
-});
 
 // thunk creators:
 export const fetchNotes = (projectId) => async (dispatch) => {
@@ -58,11 +51,11 @@ export const removeTypeFromNote =
 export const setTypeStatus =
   (projectId, noteId, typeId, isComplete) => async (dispatch) => {
     try {
-      await axios.put(
+      const { data: note } = await axios.put(
         `/api/projects/${projectId}/notes/${noteId}/types/${typeId}`,
         { isComplete }
       );
-      dispatch(_setTypeStatus(noteId, typeId, isComplete));
+      dispatch(_updateNote(note));
     } catch (error) {
       console.log(error.response.status, error.response.data);
     }
@@ -87,19 +80,6 @@ const notes = (state = initialState, action) => {
   switch (action.type) {
     case SET_NOTES:
       return action.notes;
-    case SET_TYPE_STATUS:
-      return state.map((note) =>
-        note.id !== action.noteId
-          ? note
-          : {
-              ...note,
-              noteTypes: note.noteTypes.map((noteType) =>
-                noteType.typeId !== action.typeId
-                  ? noteType
-                  : { ...noteType, isComplete: action.isComplete }
-              ),
-            }
-      );
     case UPDATE_NOTE:
       return state.map((note) =>
         note.id !== action.note.id ? note : action.note

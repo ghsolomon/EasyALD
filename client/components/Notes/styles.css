@@ -31,8 +31,9 @@
 .notecard {
   border: 1px solid #444444;
   border-radius: 10px;
-  max-width: 800px;
+  /* max-width: 800px; */
   min-width: 75%;
+  max-width: 90%;
 }
 
 .notecard-header {
@@ -90,3 +91,24 @@
   background-color: red;
   width: 10rem;
 } */
+
+.select-types-modal {
+  border-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background-color: #555555;
+}
+.modal-close-icon {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  top: 0;
+  transform: translate(50%,-50%);
+}

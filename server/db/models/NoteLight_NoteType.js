@@ -26,7 +26,8 @@ const NoteType = db.define('noteType', {
   //   allowNull: false,
   // },
   isComplete: {
-    type: Sequelize.VIRTUAL(Sequelize.BOOLEAN),
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
     get() {
       if (this.noteLightTypes) {
         return !this.noteLightTypes.some(
@@ -34,9 +35,9 @@ const NoteType = db.define('noteType', {
         );
       }
     },
-    set() {
-      console.log(this);
-    },
+    // set() {
+    //   // console.log(this);
+    // },
   },
   isPartiallyComplete: {
     type: Sequelize.VIRTUAL(Sequelize.BOOLEAN),
@@ -57,7 +58,7 @@ const NoteType = db.define('noteType', {
 // ModelTemplate.methodName = () => {};
 
 // hooks:
-NoteLight.afterCreate('createNoteLight', async (noteLight) => {
+NoteLight.afterCreate(async (noteLight) => {
   try {
     const { noteId, id: noteLightId } = noteLight;
     const noteTypes = await NoteType.findAll({
@@ -73,7 +74,7 @@ NoteLight.afterCreate('createNoteLight', async (noteLight) => {
   }
 });
 
-NoteLight.afterBulkCreate('bulkCreateNoteLight', async (noteLights) => {
+NoteLight.afterBulkCreate(async (noteLights) => {
   for (let noteLight of noteLights) {
     try {
       const { noteId, id: noteLightId } = noteLight;
@@ -91,7 +92,7 @@ NoteLight.afterBulkCreate('bulkCreateNoteLight', async (noteLights) => {
   }
 });
 
-NoteLight.afterDestroy('destroyNoteLight', async (noteLight) => {
+NoteLight.afterDestroy(async (noteLight) => {
   try {
     const { noteId, id: noteLightId } = noteLight;
     const noteTypes = await NoteType.findAll({
@@ -107,7 +108,7 @@ NoteLight.afterDestroy('destroyNoteLight', async (noteLight) => {
   }
 });
 
-NoteLight.afterDestroy('bulkDestroyNoteLight', async (noteLights) => {
+NoteLight.afterDestroy(async (noteLights) => {
   for (let noteLight of noteLights) {
     try {
       const { noteId, id: noteLightId } = noteLight;
@@ -126,13 +127,19 @@ NoteLight.afterDestroy('bulkDestroyNoteLight', async (noteLights) => {
 });
 
 // instance methods:
-// ModelTemplate.prototype.methodName = function () {};
+NoteType.prototype.setCompletionStatus = async function (isComplete) {
+  this.isComplete = isComplete;
+  await Promise.all([
+    NoteLightType.update({ isComplete }, { where: { noteTypeId: this.id } }),
+    this.save(),
+  ]);
+};
 
 // class methods:
 // ModelTemplate.methodName = () => {};
 
 // hooks:
-NoteType.afterCreate('createNoteType', async (noteType) => {
+NoteType.afterCreate(async (noteType) => {
   try {
     const { noteId, id: noteTypeId } = noteType;
     const noteLights = await NoteLight.findAll({
@@ -148,7 +155,7 @@ NoteType.afterCreate('createNoteType', async (noteType) => {
   }
 });
 
-NoteType.afterBulkCreate('bulkCreateNoteType', async (noteTypes) => {
+NoteType.afterBulkCreate(async (noteTypes) => {
   for (let noteType of noteTypes) {
     try {
       const { noteId, id: noteTypeId } = noteType;
@@ -166,7 +173,7 @@ NoteType.afterBulkCreate('bulkCreateNoteType', async (noteTypes) => {
   }
 });
 
-NoteType.afterDestroy('destroyNoteType', async (noteType) => {
+NoteType.afterDestroy(async (noteType) => {
   try {
     const { noteId, id: noteTypeId } = noteType;
     const noteLights = await NoteLight.findAll({
@@ -182,7 +189,7 @@ NoteType.afterDestroy('destroyNoteType', async (noteType) => {
   }
 });
 
-NoteType.afterDestroy('bulkDestroyNoteType', async (noteTypes) => {
+NoteType.afterDestroy(async (noteTypes) => {
   for (let noteType of noteTypes) {
     try {
       const { noteId, id: noteTypeId } = noteType;

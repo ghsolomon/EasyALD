@@ -227,9 +227,8 @@ router.put(
         error.status = 404;
         next(error);
       } else {
-        noteType.isComplete = req.body.isComplete;
-        await noteType.save();
-        res.json(noteType);
+        await noteType.setCompletionStatus(req.body.isComplete);
+        res.json(await Note.findById(noteId));
       }
     } catch (error) {
       next(error);

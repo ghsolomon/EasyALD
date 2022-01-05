@@ -4,7 +4,7 @@ import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { Login, Signup } from './components/AuthForm';
 import Home from './components/Home';
 import { LightsTable } from './components/Lights';
-import { TypesForm, Notes, NotesTable, EditNote } from './components/Notes';
+import { TypesForm, Notes } from './components/Notes';
 import { getUser } from './store';
 
 class Routes extends React.Component {
@@ -22,10 +22,6 @@ class Routes extends React.Component {
             <Route path="/home" component={Home} />
             <Route path="/projects/:projectId/lights" component={LightsTable} />
             <Route path="/projects/:projectId/types" component={TypesForm} />
-            <Route
-              path="/projects/:projectId/notes/:noteId"
-              component={EditNote}
-            />
             <Route path="/projects/:projectId/notes" component={Notes} />
             <Redirect to="/home" />
           </Switch>
