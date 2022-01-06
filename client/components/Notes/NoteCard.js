@@ -4,13 +4,22 @@ import { stringifyChannelList, whiteOrBlack } from '../../utils/helpers';
 import {
   FormControlLabel,
   Checkbox,
-  Collapse,
-  Modal,
   ToggleButton,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Accordion,
+  AccordionSummary,
+  Typography,
+  AccordionDetails,
+  Badge,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import CancelIcon from '@mui/icons-material/Cancel';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 import { addTypeToNote, removeTypeFromNote, setTypeStatus } from '../../store';
 
@@ -43,7 +52,6 @@ const NoteCard = (props) => {
       : ASSIGNED;
   }
 
-  const [showLights, setShowLights] = useState(false);
   const [showSelectTypesModal, setShowSelectTypesModal] = useState(false);
 
   return (
@@ -91,14 +99,21 @@ const NoteCard = (props) => {
 
       {/* Note Lights */}
       <div className="notecard-lights">
-        <button onClick={() => setShowLights(!showLights)}>Show lights</button>
-        <Collapse in={showLights}>
-          <NoteLightsTable
-            noteLights={props.noteLights}
-            noteTypes={props.noteTypes}
-            projectId={props.projectId}
-          />
-        </Collapse>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Badge badgeContent={props.noteLights.length} color="primary">
+              <LightbulbIcon color="secondary" />
+            </Badge>
+            <Typography marginLeft={3}>Lights</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <NoteLightsTable
+              noteLights={props.noteLights}
+              noteTypes={props.noteTypes}
+              projectId={props.projectId}
+            />
+          </AccordionDetails>
+        </Accordion>
       </div>
 
       {/* Note Types */}
@@ -130,63 +145,69 @@ const NoteCard = (props) => {
             }
           />
         ))}
-        <IconButton
-          onClick={() => setShowSelectTypesModal(true)}
-          color="primary"
-        >
+        <IconButton onClick={() => setShowSelectTypesModal(true)}>
           <SettingsIcon />
         </IconButton>
       </div>
 
-      <Modal
+      {/* <Modal
+        open={showSelectTypesModal}
+        onClose={() => setShowSelectTypesModal(false)}
+      > */}
+      <Dialog
         open={showSelectTypesModal}
         onClose={() => setShowSelectTypesModal(false)}
       >
-        <div className="select-types-modal">
-          <div className="modal-close-icon">
-            <CancelIcon onClick={() => setShowSelectTypesModal(false)} />
-          </div>
-          {props.types.map((type) => (
-            <ToggleButton
-              key={type.id}
-              value={type.id}
-              sx={{
-                backgroundColor: '#FFFFFF',
-                color: '#000000',
-                borderColor: type.color,
-                '&.Mui-selected': {
-                  backgroundColor: type.color,
-                  color: whiteOrBlack(type.color),
-                  '&:hover': {
+        <DialogTitle>Set note types</DialogTitle>
+        <DialogContent>
+          <div className="select-types">
+            {props.types.map((type) => (
+              <ToggleButton
+                key={type.id}
+                value={type.id}
+                sx={{
+                  // backgroundColor: '#FFFFFF',
+                  // color: '#000000',
+                  borderColor: type.color,
+                  '&.Mui-selected': {
                     backgroundColor: type.color,
                     color: whiteOrBlack(type.color),
+                    '&:hover': {
+                      backgroundColor: type.color,
+                      color: whiteOrBlack(type.color),
+                      filter: 'brightness(85%)',
+                    },
+                  },
+                  '&:hover': {
+                    // backgroundColor: '#FFFFFF',
+                    // color: '#000000',
                     filter: 'brightness(85%)',
                   },
-                },
-                '&:hover': {
-                  backgroundColor: '#FFFFFF',
-                  color: '#000000',
-                  filter: 'brightness(85%)',
-                },
-                '&:focusVisible': {
-                  backgroundColor: type.color,
-                  color: whiteOrBlack(type.color),
-                },
-              }}
-              onClick={() => {
-                if (typeStatus[type.id]) {
-                  props.removeType(props.projectId, props.id, type.id);
-                } else {
-                  props.addType(props.projectId, props.id, type.id);
-                }
-              }}
-              selected={!!typeStatus[type.id]}
-            >
-              {type.name}
-            </ToggleButton>
-          ))}
-        </div>
-      </Modal>
+                  '&:focusVisible': {
+                    backgroundColor: type.color,
+                    color: whiteOrBlack(type.color),
+                  },
+                }}
+                onClick={() => {
+                  if (typeStatus[type.id]) {
+                    props.removeType(props.projectId, props.id, type.id);
+                  } else {
+                    props.addType(props.projectId, props.id, type.id);
+                  }
+                }}
+                selected={!!typeStatus[type.id]}
+              >
+                {type.name}
+              </ToggleButton>
+            ))}
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowSelectTypesModal(false)}>Close</Button>
+        </DialogActions>
+        {/* </div> */}
+        {/* </Modal> */}
+      </Dialog>
     </div>
   );
 };
