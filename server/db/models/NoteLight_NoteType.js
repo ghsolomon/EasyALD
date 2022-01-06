@@ -29,7 +29,7 @@ const NoteType = db.define('noteType', {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
     get() {
-      if (this.noteLightTypes & this.noteLightTypes.length) {
+      if (this.noteLightTypes && this.noteLightTypes.length) {
         return !this.noteLightTypes.some(
           (noteLightType) => !noteLightType.isComplete
         );
