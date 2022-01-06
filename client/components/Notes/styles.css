@@ -46,22 +46,24 @@
 
 .notecard-header-main {
   display: flex;
+  flex-grow: 1;
 }
 
 .notecard-header-button {
-  right: 0;
+  margin-left: 10px;
 }
 
 .notecard-header-info {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   flex-wrap: nowrap;
   row-gap: 0.25rem;
 }
 
 .notecard-positions {
   font-size: large;
-  font-weight:800;
+  font-weight:800 !important;
 
 }
 

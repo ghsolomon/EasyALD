@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import NoteCard from './NoteCard';
 import { connect } from 'react-redux';
-import { fetchNotes, fetchTypes } from '../../store';
+import { fetchLights, fetchNotes, fetchTypes } from '../../store';
 import { Modal } from '@mui/material';
 import { EditNoteModal } from '.';
 
@@ -42,6 +42,7 @@ const Notes = (props) => {
   useEffect(() => {
     props.fetchNotes(props.match.params.projectId);
     props.fetchTypes(props.match.params.projectId);
+    props.fetchLights(props.match.params.projectId);
   }, []);
 
   // Set local state once notes have been fetched
@@ -91,6 +92,7 @@ const mapState = (state) => ({ notes: state.notes });
 const mapDispatch = (dispatch) => ({
   fetchNotes: (projectId) => dispatch(fetchNotes(projectId)),
   fetchTypes: (projectId) => dispatch(fetchTypes(projectId)),
+  fetchLights: (projectId) => dispatch(fetchLights(projectId)),
 });
 
 export default connect(mapState, mapDispatch)(Notes);

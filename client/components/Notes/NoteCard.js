@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { stringifyChannelList, whiteOrBlack } from '../../utils/helpers';
 import {
@@ -16,10 +16,13 @@ import {
   Typography,
   AccordionDetails,
   Badge,
+  Autocomplete,
+  TextField,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import SaveIcon from '@mui/icons-material/Save';
 
 import {
   addTypeToNote,
@@ -60,10 +63,42 @@ const NoteCard = (props) => {
 
   const [showSelectTypesModal, setShowSelectTypesModal] = useState(false);
 
+  const [channel, setChannel] = useState('');
+  const [position, setPosition] = useState('');
+  const [posOrder, setPosOrder] = useState(null);
+  const [description, setDescription] = useState(null);
+
+  useEffect(() => {
+    setChannel(props.channel || '');
+    setPosition(props.position || '');
+    setPosOrder(props.posOrder);
+    setDescription(props.description);
+  }, []);
+
+  const unsavedChanges =
+    description !== props.description ||
+    channel !== (props.channel || '') ||
+    position !== (props.position || '') ||
+    (+posOrder !== props.posOrder && posOrder !== props.posOrder);
+
+  const handleUpdate = (evt) => {
+    evt.preventDefault();
+    if (unsavedChanges) {
+      props.updateNote({
+        id: props.id,
+        projectId: props.projectId,
+        channel,
+        position,
+        posOrder,
+        description,
+      });
+    }
+  };
+
   return (
     <div className="notecard">
       {/* Note Header */}
-      <div className="notecard-header">
+      <form className="notecard-header" onSubmit={handleUpdate}>
         <div className="notecard-header-main">
           <div className="notecard-header-status">
             <StatusSelect
@@ -78,15 +113,70 @@ const NoteCard = (props) => {
             />
           </div>
           <div className="notecard-header-info">
-            <div className="notecard-positions">{positions}</div>
-            <div className="notecard-channels">{channels}</div>
+            <div className="notecard-positions">
+              {positions || (
+                <Autocomplete
+                  fullWidth
+                  freeSolo
+                  disableClearable
+                  options={props.positions.map((position) => position.name)}
+                  onInputChange={(evt, value) => {
+                    setPosition(value);
+                    const matchingPosition = props.positions.find(
+                      (position) => position.name === value
+                    );
+                    if (matchingPosition) {
+                      setPosOrder(matchingPosition.posOrder);
+                    } else {
+                      setPosOrder(null);
+                    }
+                  }}
+                  inputValue={position}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Position"
+                      size="small"
+                      inputProps={{
+                        ...params.inputProps,
+                        className: 'notecard-positions',
+                      }}
+                    />
+                  )}
+                />
+              )}
+            </div>
+            <div className="notecard-channels">
+              {channels || (
+                <TextField
+                  fullWidth
+                  value={channel}
+                  onChange={(evt) => setChannel(evt.target.value)}
+                  placeholder="Channel"
+                  size="small"
+                />
+              )}
+            </div>
           </div>
         </div>
-        <div className="notecard-header-button">BUTTON</div>
-      </div>
+        <div className="notecard-header-button">
+          {unsavedChanges && (
+            <IconButton type="submit">
+              <SaveIcon />
+            </IconButton>
+          )}
+        </div>
+      </form>
 
       {/* Note Editor */}
-      <div className="notecard-note-description">
+      <div
+        className="notecard-note-description"
+        onKeyDown={(evt) => {
+          if (evt.key === 's' && evt.metaKey) {
+            handleUpdate(evt);
+          }
+        }}
+      >
         <CKEditor
           editor={BalloonEditor}
           data={props.description}
@@ -105,8 +195,9 @@ const NoteCard = (props) => {
             console.log('Editor is ready to use!', editor);
           }}
           onChange={(event, editor) => {
-            const data = editor.getData();
-            console.log({ event, editor, data });
+            // const data = editor.getData();
+            setDescription(editor.getData());
+            // console.log({ event, editor, data });
           }}
           onBlur={(event, editor) => {
             console.log('Blur.', editor);
@@ -233,7 +324,10 @@ const NoteCard = (props) => {
   );
 };
 
-const mapState = (state) => ({ types: state.types });
+const mapState = (state) => ({
+  types: state.types,
+  positions: state.positions,
+});
 
 const mapDispatch = (dispatch) => ({
   addType: (projectId, noteId, typeId) =>

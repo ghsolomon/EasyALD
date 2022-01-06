@@ -6,12 +6,14 @@ import auth from './auth';
 import lights from './lights';
 import types from './types';
 import notes from './notes';
+import positions from './positions';
 
 const reducer = combineReducers({
   auth,
   lights,
   types,
   notes,
+  positions,
 });
 
 const middleware = composeWithDevTools(

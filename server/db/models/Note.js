@@ -13,6 +13,9 @@ const Note = db.define('note', {
     defaultValue: 'Active',
     allowNull: false,
   },
+  channel: Sequelize.STRING,
+  position: Sequelize.STRING,
+  posOrder: Sequelize.INTEGER,
 });
 
 // instance methods:
