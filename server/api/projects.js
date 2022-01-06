@@ -182,6 +182,32 @@ router.delete(
  * SINGLE NOTES ROUTES
  */
 
+// PUT /api/projects/:projectId/notes/:noteId
+router.put(
+  '/:projectId/notes/:noteId',
+  verifyPermissions,
+  async (req, res, next) => {
+    const { projectId, noteId } = req.params;
+    try {
+      const note = await Note.findById(noteId);
+      if (!note || note.projectId !== +projectId) {
+        const error = new Error('Not found');
+        error.status = 404;
+        next(error);
+      } else {
+        await note.update(req.body);
+        res.json(await Note.findById(note.id));
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * SINGLE NOTES TYPES ROUTES
+ */
+
 // POST /api/projects/:projectId/notes/:noteId/types
 router.post(
   '/:projectId/notes/:noteId/types',

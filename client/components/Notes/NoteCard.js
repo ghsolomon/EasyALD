@@ -21,11 +21,17 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
-import { addTypeToNote, removeTypeFromNote, setTypeStatus } from '../../store';
+import {
+  addTypeToNote,
+  removeTypeFromNote,
+  setTypeStatus,
+  updateNote,
+} from '../../store';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
 import NoteLightsTable from './NoteLightsTable';
+import StatusSelect from './StatusSelect';
 
 const NoteCard = (props) => {
   const positions = [
@@ -58,10 +64,25 @@ const NoteCard = (props) => {
     <div className="notecard">
       {/* Note Header */}
       <div className="notecard-header">
-        <div className="notecard-header-info">
-          <div className="notecard-positions">{positions}</div>
-          <div className="notecard-channels">{channels}</div>
+        <div className="notecard-header-main">
+          <div className="notecard-header-status">
+            <StatusSelect
+              status={props.status}
+              handleSelect={(status) =>
+                props.updateNote({
+                  id: props.id,
+                  projectId: props.projectId,
+                  status,
+                })
+              }
+            />
+          </div>
+          <div className="notecard-header-info">
+            <div className="notecard-positions">{positions}</div>
+            <div className="notecard-channels">{channels}</div>
+          </div>
         </div>
+        <div className="notecard-header-button">BUTTON</div>
       </div>
 
       {/* Note Editor */}
@@ -221,6 +242,7 @@ const mapDispatch = (dispatch) => ({
     dispatch(removeTypeFromNote(projectId, noteId, typeId)),
   setTypeStatus: (projectId, noteId, typeId, isComplete) =>
     dispatch(setTypeStatus(projectId, noteId, typeId, isComplete)),
+  updateNote: (note) => dispatch(updateNote(note)),
 });
 
 export default connect(mapState, mapDispatch)(NoteCard);

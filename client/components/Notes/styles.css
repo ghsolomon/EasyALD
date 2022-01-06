@@ -38,7 +38,18 @@
 .notecard-header {
   background-color: #444444;
   border-radius: 8px 8px 0 0;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
   padding: 0.5rem;
+}
+
+.notecard-header-main {
+  display: flex;
+}
+
+.notecard-header-button {
+  right: 0;
 }
 
 .notecard-header-info {

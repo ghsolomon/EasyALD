@@ -74,6 +74,18 @@ export const setNoteLightTypeComplete =
     }
   };
 
+export const updateNote = (note) => async (dispatch) => {
+  try {
+    const { data: updatedNote } = await axios.put(
+      `/api/projects/${note.projectId}/notes/${note.id}`,
+      note
+    );
+    dispatch(_updateNote(updatedNote));
+  } catch (error) {
+    console.log(error.response.status, error.response.data);
+  }
+};
+
 // reducer:
 const initialState = [];
 const notes = (state = initialState, action) => {

@@ -8,44 +8,41 @@ const NoteLightType = require('./NoteLightType');
 // model definition:
 const Note = db.define('note', {
   description: Sequelize.TEXT,
+  status: {
+    type: Sequelize.ENUM('Active', 'Discuss', 'On Hold'),
+    defaultValue: 'Active',
+    allowNull: false,
+  },
 });
 
 // instance methods:
 // ModelTemplate.prototype.methodName = function () {};
 
+const DEFAULT_NOTE_OPTIONS = {
+  include: [
+    { model: NoteType, include: [Type, NoteLightType] },
+    {
+      model: NoteLight,
+      include: [Light, NoteLightType],
+    },
+  ],
+  order: [
+    ['noteLights', 'light', 'PosOrd'],
+    ['noteTypes', 'type', 'sortOrder'],
+  ],
+};
+
 // class methods:
 Note.findByProjectId = async function (projectId) {
   const notes = await this.findAll({
     where: { projectId },
-    include: [
-      { model: NoteType, include: [Type, NoteLightType] },
-      {
-        model: NoteLight,
-        include: [Light, NoteLightType],
-      },
-    ],
-    order: [
-      ['noteLights', 'light', 'PosOrd'],
-      ['noteTypes', 'type', 'sortOrder'],
-    ],
+    ...DEFAULT_NOTE_OPTIONS,
   });
   return notes;
 };
 
 Note.findById = async function (noteId) {
-  const note = await Note.findByPk(noteId, {
-    include: [
-      { model: NoteType, include: [Type, NoteLightType] },
-      {
-        model: NoteLight,
-        include: [Light, NoteLightType],
-      },
-    ],
-    order: [
-      ['noteLights', 'light', 'PosOrd'],
-      ['noteTypes', 'type', 'sortOrder'],
-    ],
-  });
+  const note = await Note.findByPk(noteId, DEFAULT_NOTE_OPTIONS);
   return note;
 };
 
