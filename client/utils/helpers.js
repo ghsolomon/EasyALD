@@ -50,3 +50,14 @@ export const whiteOrBlack = (color) =>
   tinycolor(color).isValid() && tinycolor(color).isDark()
     ? '#FFFFFF'
     : '#000000';
+
+export const parseQueryString = (query) =>
+  query
+    .replace(/^[^a-zA-z0-9]+|[^a-zA-Z0-9,/-]|[^a-zA-z0-9]+$/g, '')
+    .split(',')
+    .map((query) =>
+      query
+        .replace(/(?<=-).*-/g, '')
+        .split('-')
+        .map((query) => (!Number.isNaN(+query) ? +query : query))
+    );

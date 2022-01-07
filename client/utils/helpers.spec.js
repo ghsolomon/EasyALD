@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ch, stringifyChannelList } from './helpers';
+import { ch, parseQueryString, stringifyChannelList } from './helpers';
 
 describe('helpers', () => {
   describe('channel template tag', () => {
@@ -44,6 +44,27 @@ describe('helpers', () => {
     it('should convert a range of channels with duplicates', () => {
       const list = [201, 201, 202, 202, 204];
       expect(stringifyChannelList(list)).to.equal('(201)-(202), (204)');
+    });
+
+    describe('parseQueryString', () => {
+      it('should convert a query string to an array', () => {
+        const query1 = '1,2,3';
+        const query2 = '1-2-3-4';
+        const query3 = '1-10, 11-12';
+        const query4 = '-$!-1--2,3-4,-';
+        const query5 = 'a,b,c';
+        expect(parseQueryString(query1)).to.deep.equal([[1], [2], [3]]);
+        expect(parseQueryString(query2)).to.deep.equal([[1, 4]]);
+        expect(parseQueryString(query3)).to.deep.equal([
+          [1, 10],
+          [11, 12],
+        ]);
+        expect(parseQueryString(query4)).to.deep.equal([
+          [1, 2],
+          [3, 4],
+        ]);
+        expect(parseQueryString(query5)).to.deep.equal([['a'], ['b'], ['c']]);
+      });
     });
   });
 });
