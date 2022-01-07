@@ -33,7 +33,7 @@ import {
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
-import NoteLightsTable from './NoteLightsTable';
+import NoteLightsTable, { AddLightsTable } from './NoteLightsTable';
 import StatusSelect from './StatusSelect';
 
 const NoteCard = (props) => {
@@ -223,6 +223,7 @@ const NoteCard = (props) => {
               noteLights={props.noteLights}
               noteTypes={props.noteTypes}
               projectId={props.projectId}
+              noteId={props.id}
             />
           </AccordionDetails>
         </Accordion>

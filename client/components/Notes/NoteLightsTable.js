@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { connect } from 'react-redux';
-import DataGrid, { TextEditor } from 'react-data-grid';
-import { Checkbox } from '@mui/material';
-import { setNoteLightTypeComplete } from '../../store';
+import DataGrid, { SelectColumn, TextEditor } from 'react-data-grid';
+import { Checkbox, Button } from '@mui/material';
+import { removeLightsFromNote, setNoteLightTypeComplete } from '../../store';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const columns = [
   {
@@ -18,6 +19,7 @@ const columns = [
     key: 'Pur',
     name: 'Purpose',
     resizable: true,
+    sortable: true,
     formatter({ row }) {
       return row.light.Pur;
     },
@@ -35,6 +37,7 @@ const columns = [
     key: 'Type & Acc & Load',
     name: 'Type / Acc / Load',
     resizable: true,
+    sortable: true,
     formatter({ row }) {
       return row.light['Type & Acc & Load'];
     },
@@ -43,28 +46,42 @@ const columns = [
     key: 'Clr & Gbo',
     name: 'Color / Gobo',
     resizable: true,
+    sortable: true,
     formatter({ row }) {
       return row.light['Clr & Gbo'];
     },
   },
 ];
 
-const NoteLightsTable = (props) => {
-  const typeColumns = props.noteTypes.map((noteType) => ({
+const NoteLightsTable = ({
+  projectId,
+  noteId,
+  noteLights,
+  noteTypes = [],
+  ...props
+}) => {
+  const typeColumns = noteTypes.map((noteType) => ({
     key: noteType.type.id,
-    name: noteType.type.name[0],
+    name: noteType.type.name,
+    width: 1,
     formatter({ row }) {
       const isComplete = row.noteLightTypes.find(
         (noteLightType) => noteLightType.noteTypeId === noteType.id
       ).isComplete;
       return (
-        <input
-          type="checkbox"
+        <Checkbox
           checked={isComplete}
-          // onChange={props.setNoteLightTypeComplete(!isComplete)}
+          sx={{
+            color: noteType.type.color,
+            margin: 0,
+            padding: 0,
+            '&.Mui-checked': { color: noteType.type.color },
+            '&.MuiCheckbox-indeterminate': { color: noteType.type.color },
+            '& .MuiSvgIcon-root': { fontSize: '1rem' },
+          }}
           onChange={(evt) => {
             props.setNoteLightTypeComplete(
-              props.projectId,
+              projectId,
               row.noteId,
               row.light.id,
               noteType.typeId,
@@ -73,65 +90,110 @@ const NoteLightsTable = (props) => {
           }}
         />
       );
-      // return '';
     },
   }));
 
   const [sortColumns, setSortColumns] = useState([]);
+  const [selectedRows, setSelectedRows] = useState(new Set());
 
   const onSortColumnsChange = useCallback((sortColumns) => {
     setSortColumns(sortColumns.slice(-1));
   }, []);
 
   const sortedRows = useMemo(() => {
-    if (sortColumns.length === 0) return props.noteLights;
+    if (sortColumns.length === 0) return noteLights;
     const { columnKey, direction } = sortColumns[0];
 
-    const sortedRows = [...props.noteLights];
+    const sortedRows = [...noteLights];
 
     switch (columnKey) {
       case 'Ch':
-        sortedRows.sort(
-          (noteLight1, noteLight2) =>
-            Number(noteLight1.light.Ch) - Number(noteLight2.light.Ch)
+        sortedRows.sort(({ light: a }, { light: b }) =>
+          a.Ch === b.Ch
+            ? 0
+            : a.Ch === null
+            ? 1
+            : b.Ch === null
+            ? -1
+            : Number.isNaN(+a.Ch - +b.Ch)
+            ? Number.isNaN(+a.Ch)
+              ? 1
+              : -1
+            : +a.Ch - +b.Ch
         );
         break;
-      case 'Pos':
-        sortedRows.sort((noteLight1, noteLight2) => {
-          if (noteLight1.light.PosOrd > noteLight2.light.PosOrd) {
-            return 1;
-          } else if (noteLight1.light.PosOrd < noteLight2.light.PosOrd) {
-            return -1;
-          } else {
-            return noteLight1.light.LtOrd - noteLight2.light.LtOrd;
-          }
-        });
+      case 'Pos & U#':
+        sortedRows.sort((a, b) =>
+          a.light.PosOrd > b.light.PosOrd
+            ? 1
+            : a.light.PosOrd < b.light.PosOrd
+            ? -1
+            : 0
+        );
         break;
       default:
+        sortedRows.sort(({ light: a }, { light: b }) =>
+          a[columnKey] === b[columnKey]
+            ? 0
+            : a[columnKey] === null
+            ? 1
+            : b[columnKey] === null
+            ? -1
+            : a[columnKey] > b[columnKey]
+            ? 1
+            : a[columnKey] < b[columnKey]
+            ? -1
+            : 0
+        );
     }
     return direction === 'DESC' ? sortedRows.reverse() : sortedRows;
-  }, [props.noteLights, sortColumns]);
+  }, [noteLights, sortColumns]);
 
   return (
-    <DataGrid
-      rows={sortedRows}
-      columns={[...columns, ...typeColumns]}
-      sortColumns={sortColumns}
-      onSortColumnsChange={onSortColumnsChange}
-      className="note-lights-table rdg-dark"
-      rowHeight={25}
-      headerRowHeight={25}
-    />
+    <>
+      <DataGrid
+        rows={sortedRows}
+        columns={[SelectColumn, ...columns, ...typeColumns]}
+        sortColumns={sortColumns}
+        onSortColumnsChange={onSortColumnsChange}
+        className="note-lights-table rdg-dark"
+        rowHeight={25}
+        headerRowHeight={25}
+        rowKeyGetter={(row) => row.light.id}
+        selectedRows={selectedRows}
+        onSelectedRowsChange={setSelectedRows}
+      />
+      {!!selectedRows.size && (
+        <Button
+          variant="outlined"
+          color="error"
+          endIcon={<DeleteIcon />}
+          onClick={() => {
+            props.removeLightsFromNote(projectId, noteId, [...selectedRows]);
+            setSelectedRows(new Set());
+          }}
+        >
+          Remove {selectedRows.size}{' '}
+          {selectedRows.size > 1 ? 'lights' : 'light'}
+        </Button>
+      )}
+    </>
   );
 };
 
-const mapState = (state) => ({ types: state.types });
+const mapTypes = (state) => ({ types: state.types });
+const mapLights = (state) => ({
+  noteLights: state.lights.map((light) => ({ light })),
+});
 
 const mapDispatch = (dispatch) => ({
   setNoteLightTypeComplete: (projectId, noteId, lightId, typeId, isComplete) =>
     dispatch(
       setNoteLightTypeComplete(projectId, noteId, lightId, typeId, isComplete)
     ),
+  removeLightsFromNote: (projectId, noteId, lightIds) =>
+    dispatch(removeLightsFromNote(projectId, noteId, lightIds)),
 });
 
-export default connect(mapState, mapDispatch)(NoteLightsTable);
+export default connect(mapTypes, mapDispatch)(NoteLightsTable);
+export const AddLightsTable = connect(mapLights, mapDispatch)(NoteLightsTable);

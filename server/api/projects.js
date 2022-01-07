@@ -291,6 +291,28 @@ router.delete(
  * NOTE LIGHT ROUTES
  */
 
+// POST /api/projects/:projectId/notes/:noteId/lights/remove
+router.post(
+  '/:projectId/notes/:noteId/lights/remove',
+  verifyPermissions,
+  async (req, res, next) => {
+    const { projectId, noteId } = req.params;
+    try {
+      const note = await Note.findById(noteId);
+      if (!note || note.projectId !== +projectId) {
+        const error = new Error('Not found');
+        error.status = 404;
+        next(error);
+      } else {
+        await note.removeLights(req.body);
+        res.json(await Note.findById(note.id));
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // PUT /api/projects/:projectId/notes/:noteId/lights/:lightId/types/:typeId
 router.put(
   '/:projectId/notes/:noteId/lights/:lightId/types/:typeId',
