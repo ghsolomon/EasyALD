@@ -51,13 +51,19 @@ export const whiteOrBlack = (color) =>
     ? '#FFFFFF'
     : '#000000';
 
-export const parseQueryString = (query) =>
-  query
-    .replace(/^[^a-zA-z0-9]+|[^a-zA-Z0-9,/-]|[^a-zA-z0-9]+$/g, '')
-    .split(',')
-    .map((query) =>
+export const parseQueryString = (query) => {
+  const strippedQuery = query.replace(
+    /^[^a-zA-z0-9]+|[^a-zA-Z0-9,/-]|[^a-zA-z0-9]+$/g,
+    ''
+  );
+  if (!strippedQuery.length) {
+    return [];
+  } else {
+    return strippedQuery.split(',').map((query) =>
       query
         .replace(/(?<=-).*-/g, '')
         .split('-')
         .map((query) => (!Number.isNaN(+query) ? +query : query))
     );
+  }
+};

@@ -1,9 +1,16 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { connect } from 'react-redux';
 import DataGrid, { SelectColumn, TextEditor } from 'react-data-grid';
-import { Checkbox, Button } from '@mui/material';
-import { removeLightsFromNote, setNoteLightTypeComplete } from '../../store';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Checkbox,
+  Button,
+  TextField,
+  InputAdornment,
+  Autocomplete,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { setNoteLightTypeComplete } from '../../store';
+import { parseQueryString } from '../../utils/helpers';
 
 const columns = [
   {
@@ -14,6 +21,7 @@ const columns = [
     formatter({ row }) {
       return row.light.Ch;
     },
+    // headerRenderer: () => <span>CHANNNEL</span>,
   },
   {
     key: 'Pur',
@@ -54,9 +62,12 @@ const columns = [
 ];
 
 const NoteLightsTable = ({
+  className = '',
+  positions,
   projectId,
-  noteId,
   noteLights,
+  selectedRows,
+  setSelectedRows,
   noteTypes = [],
   ...props
 }) => {
@@ -94,7 +105,6 @@ const NoteLightsTable = ({
   }));
 
   const [sortColumns, setSortColumns] = useState([]);
-  const [selectedRows, setSelectedRows] = useState(new Set());
 
   const onSortColumnsChange = useCallback((sortColumns) => {
     setSortColumns(sortColumns.slice(-1));
@@ -115,11 +125,7 @@ const NoteLightsTable = ({
             ? 1
             : b.Ch === null
             ? -1
-            : Number.isNaN(+a.Ch - +b.Ch)
-            ? Number.isNaN(+a.Ch)
-              ? 1
-              : -1
-            : +a.Ch - +b.Ch
+            : a.Ch.localeCompare(b.Ch, 'en', { numeric: true })
         );
         break;
       case 'Pos & U#':
@@ -128,7 +134,7 @@ const NoteLightsTable = ({
             ? 1
             : a.light.PosOrd < b.light.PosOrd
             ? -1
-            : 0
+            : a.light.LtOrd - b.light.LtOrd
         );
         break;
       default:
@@ -149,41 +155,111 @@ const NoteLightsTable = ({
     return direction === 'DESC' ? sortedRows.reverse() : sortedRows;
   }, [noteLights, sortColumns]);
 
+  const [filterChannels, setFilterChannels] = useState('');
+  const [filterPositions, setFilterPositions] = useState('');
+
+  const passesChannelFilter = (filterArr, ch) => {
+    if (!filterArr.length) {
+      return true;
+    }
+    const chanToCheck = !Number.isNaN(ch) ? +ch : ch;
+    for (let set of filterArr) {
+      if (!set.length) {
+        return true;
+      } else if (set.length === 1) {
+        if (set[0] === chanToCheck) {
+          return true;
+        }
+      } else if (set[0] <= chanToCheck && set[1] >= chanToCheck) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const passesPositionFilter = (posFilter, pos) => {
+    if (!posFilter.length || pos.toLowerCase().includes(posFilter)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const filteredRows = useMemo(() => {
+    const chanArr = parseQueryString(filterChannels);
+    const posFilter = filterPositions.toLowerCase();
+    return sortedRows.filter(
+      (row) =>
+        passesChannelFilter(chanArr, row.light.Ch) &&
+        passesPositionFilter(posFilter, row.light.Pos)
+    );
+  }, [sortedRows, filterChannels, filterPositions]);
+
   return (
     <>
+      <div className="table-filters">
+        <TextField
+          value={filterChannels}
+          onChange={(evt) => setFilterChannels(evt.target.value)}
+          label="Channel"
+          size="small"
+          type="search"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Autocomplete
+          freeSolo
+          disableClearable
+          options={positions.map((position) => position.name)}
+          onInputChange={(evt, val) => setFilterPositions(val)}
+          inputValue={filterPositions}
+          size="small"
+          sx={{ maxWidth: '50%' }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Position"
+              InputProps={{
+                ...params.InputProps,
+                type: 'search',
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+        />
+      </div>
       <DataGrid
-        rows={sortedRows}
+        rows={filteredRows}
         columns={[SelectColumn, ...columns, ...typeColumns]}
         sortColumns={sortColumns}
         onSortColumnsChange={onSortColumnsChange}
-        className="note-lights-table rdg-dark"
+        className={`${className} rdg-dark`}
         rowHeight={25}
         headerRowHeight={25}
         rowKeyGetter={(row) => row.light.id}
         selectedRows={selectedRows}
         onSelectedRowsChange={setSelectedRows}
       />
-      {!!selectedRows.size && (
-        <Button
-          variant="outlined"
-          color="error"
-          endIcon={<DeleteIcon />}
-          onClick={() => {
-            props.removeLightsFromNote(projectId, noteId, [...selectedRows]);
-            setSelectedRows(new Set());
-          }}
-        >
-          Remove {selectedRows.size}{' '}
-          {selectedRows.size > 1 ? 'lights' : 'light'}
-        </Button>
-      )}
     </>
   );
 };
 
-const mapTypes = (state) => ({ types: state.types });
-const mapLights = (state) => ({
+const mapTypesAndPos = (state) => ({
+  types: state.types,
+  positions: state.positions,
+});
+const mapLightsAndPos = (state) => ({
   noteLights: state.lights.map((light) => ({ light })),
+  positions: state.positions,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -191,9 +267,10 @@ const mapDispatch = (dispatch) => ({
     dispatch(
       setNoteLightTypeComplete(projectId, noteId, lightId, typeId, isComplete)
     ),
-  removeLightsFromNote: (projectId, noteId, lightIds) =>
-    dispatch(removeLightsFromNote(projectId, noteId, lightIds)),
 });
 
-export default connect(mapTypes, mapDispatch)(NoteLightsTable);
-export const AddLightsTable = connect(mapLights, mapDispatch)(NoteLightsTable);
+export default connect(mapTypesAndPos, mapDispatch)(NoteLightsTable);
+export const AddLightsTable = connect(
+  mapLightsAndPos,
+  mapDispatch
+)(NoteLightsTable);

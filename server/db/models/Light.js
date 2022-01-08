@@ -53,6 +53,13 @@ Light.findByProjectId = async function (projectId) {
   return lights;
 };
 
+Light.findMany = async function (projectId, lightIds) {
+  const lights = await Light.findAll({
+    where: { projectId, id: { [Sequelize.Op.or]: lightIds } },
+  });
+  return lights;
+};
+
 // hooks:
 
 // export:

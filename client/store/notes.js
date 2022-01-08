@@ -86,6 +86,19 @@ export const updateNote = (note) => async (dispatch) => {
   }
 };
 
+export const addLightsToNote =
+  (projectId, noteId, lightIds) => async (dispatch) => {
+    try {
+      const { data: updatedNote } = await axios.post(
+        `/api/projects/${projectId}/notes/${noteId}/lights`,
+        lightIds
+      );
+      dispatch(_updateNote(updatedNote));
+    } catch (error) {
+      console.log(error.response.status, error.response.data);
+    }
+  };
+
 export const removeLightsFromNote =
   (projectId, noteId, lightIds) => async (dispatch) => {
     try {

@@ -53,6 +53,7 @@ describe('helpers', () => {
         const query3 = '1-10, 11-12';
         const query4 = '-$!-1--2,3-4,-';
         const query5 = 'a,b,c';
+        const query6 = ',';
         expect(parseQueryString(query1)).to.deep.equal([[1], [2], [3]]);
         expect(parseQueryString(query2)).to.deep.equal([[1, 4]]);
         expect(parseQueryString(query3)).to.deep.equal([
@@ -64,6 +65,7 @@ describe('helpers', () => {
           [3, 4],
         ]);
         expect(parseQueryString(query5)).to.deep.equal([['a'], ['b'], ['c']]);
+        expect(parseQueryString(query6)).to.deep.equal([]);
       });
     });
   });

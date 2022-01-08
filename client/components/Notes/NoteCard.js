@@ -23,12 +23,16 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 import {
   addTypeToNote,
   removeTypeFromNote,
   setTypeStatus,
   updateNote,
+  removeLightsFromNote,
+  addLightsToNote,
 } from '../../store';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -62,6 +66,9 @@ const NoteCard = (props) => {
   }
 
   const [showSelectTypesModal, setShowSelectTypesModal] = useState(false);
+  const [showAddLightsModal, setShowAddLightsModal] = useState(false);
+  const [NLSelectedRows, setNLSelectedRows] = useState(new Set());
+  const [ALSelectedRows, setALSelectedRows] = useState(new Set());
 
   const [channel, setChannel] = useState('');
   const [position, setPosition] = useState('');
@@ -220,11 +227,40 @@ const NoteCard = (props) => {
           </AccordionSummary>
           <AccordionDetails>
             <NoteLightsTable
+              className="note-lights-table"
               noteLights={props.noteLights}
               noteTypes={props.noteTypes}
               projectId={props.projectId}
               noteId={props.id}
+              selectedRows={NLSelectedRows}
+              setSelectedRows={setNLSelectedRows}
             />
+            <div className="table-add-remove-lights">
+              {!!NLSelectedRows.size && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  endIcon={<DeleteIcon />}
+                  onClick={() => {
+                    props.removeLightsFromNote(props.projectId, props.id, [
+                      ...NLSelectedRows,
+                    ]);
+                    setNLSelectedRows(new Set());
+                  }}
+                >
+                  Remove {NLSelectedRows.size}{' '}
+                  {NLSelectedRows.size > 1 ? 'lights' : 'light'}
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                color="success"
+                endIcon={<AddIcon />}
+                onClick={() => setShowAddLightsModal(true)}
+              >
+                Add
+              </Button>
+            </div>
           </AccordionDetails>
         </Accordion>
       </div>
@@ -262,11 +298,44 @@ const NoteCard = (props) => {
           <SettingsIcon />
         </IconButton>
       </div>
+      {/* Show Add Lights Modal */}
+      <Dialog
+        maxWidth="xl"
+        fullWidth
+        open={showAddLightsModal}
+        onClose={() => setShowAddLightsModal(false)}
+      >
+        <DialogTitle>Add lights</DialogTitle>
+        <DialogContent>
+          <AddLightsTable
+            projectId={props.projectId}
+            selectedRows={ALSelectedRows}
+            setSelectedRows={setALSelectedRows}
+          />
+        </DialogContent>
+        <DialogActions>
+          {!!ALSelectedRows.size && (
+            <Button
+              variant="contained"
+              color="success"
+              endIcon={<AddIcon />}
+              onClick={() => {
+                props.addLightsToNote(props.projectId, props.id, [
+                  ...ALSelectedRows,
+                ]);
+                setALSelectedRows(new Set());
+                setShowAddLightsModal(false);
+              }}
+            >
+              Add {ALSelectedRows.size}{' '}
+              {ALSelectedRows.size > 1 ? 'lights' : 'light'}
+            </Button>
+          )}
+          <Button onClick={() => setShowAddLightsModal(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
 
-      {/* <Modal
-        open={showSelectTypesModal}
-        onClose={() => setShowSelectTypesModal(false)}
-      > */}
+      {/* Show Select Types Modal */}
       <Dialog
         open={showSelectTypesModal}
         onClose={() => setShowSelectTypesModal(false)}
@@ -318,8 +387,6 @@ const NoteCard = (props) => {
         <DialogActions>
           <Button onClick={() => setShowSelectTypesModal(false)}>Close</Button>
         </DialogActions>
-        {/* </div> */}
-        {/* </Modal> */}
       </Dialog>
     </div>
   );
@@ -338,6 +405,10 @@ const mapDispatch = (dispatch) => ({
   setTypeStatus: (projectId, noteId, typeId, isComplete) =>
     dispatch(setTypeStatus(projectId, noteId, typeId, isComplete)),
   updateNote: (note) => dispatch(updateNote(note)),
+  addLightsToNote: (projectId, noteId, lightIds) =>
+    dispatch(addLightsToNote(projectId, noteId, lightIds)),
+  removeLightsFromNote: (projectId, noteId, lightIds) =>
+    dispatch(removeLightsFromNote(projectId, noteId, lightIds)),
 });
 
 export default connect(mapState, mapDispatch)(NoteCard);
