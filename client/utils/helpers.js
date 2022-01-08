@@ -24,7 +24,7 @@ export const stringifyChannelList = (channelList) => {
   let inRange = false;
   for (let i = 1; i < channelList.length; i++) {
     if (channelList[i] !== currentVal) {
-      if (channelList[i] !== currentVal + 1) {
+      if (+channelList[i] !== +currentVal + 1) {
         if (inRange) {
           returnStr += ch`-${currentVal}`;
           inRange = false;
@@ -61,7 +61,7 @@ export const parseQueryString = (query) => {
   } else {
     return strippedQuery.split(',').map((query) =>
       query
-        .replace(/(?<=-).*-/g, '')
+        // .replace(/(?<=-).*-/g, '')
         .split('-')
         .map((query) => (!Number.isNaN(+query) ? +query : query))
     );
