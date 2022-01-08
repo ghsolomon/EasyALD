@@ -236,6 +236,14 @@ const NoteCard = (props) => {
               setSelectedRows={setNLSelectedRows}
             />
             <div className="table-add-remove-lights">
+              <Button
+                variant="contained"
+                color="success"
+                endIcon={<AddIcon />}
+                onClick={() => setShowAddLightsModal(true)}
+              >
+                Add
+              </Button>{' '}
               {!!NLSelectedRows.size && (
                 <Button
                   variant="outlined"
@@ -252,14 +260,6 @@ const NoteCard = (props) => {
                   {NLSelectedRows.size > 1 ? 'lights' : 'light'}
                 </Button>
               )}
-              <Button
-                variant="contained"
-                color="success"
-                endIcon={<AddIcon />}
-                onClick={() => setShowAddLightsModal(true)}
-              >
-                Add
-              </Button>
             </div>
           </AccordionDetails>
         </Accordion>
