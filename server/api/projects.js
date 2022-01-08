@@ -307,11 +307,7 @@ router.post(
         error.status = 404;
         next(error);
       } else {
-        // Only add 5 lights at a time to prevent running out of memory
-        while (lights.length) {
-          await note.addLights(lights.splice(0, 5));
-        }
-
+        await note.addLights(lights);
         res.json(await Note.findById(note.id));
       }
     } catch (error) {

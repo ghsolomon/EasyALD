@@ -23,15 +23,18 @@ const Note = db.define('note', {
 
 const DEFAULT_NOTE_OPTIONS = {
   include: [
-    { model: NoteType, include: [Type, NoteLightType] },
+    {
+      model: NoteType,
+      separate: true,
+      include: [Type, { model: NoteLightType, separate: true }],
+      order: [[Type, 'sortOrder', 'ASC']],
+    },
     {
       model: NoteLight,
-      include: [Light, NoteLightType],
+      separate: true,
+      include: [Light, { model: NoteLightType, separate: true }],
+      order: [[Light, 'PosOrd', 'ASC']],
     },
-  ],
-  order: [
-    ['noteLights', 'light', 'PosOrd'],
-    ['noteTypes', 'type', 'sortOrder'],
   ],
 };
 
