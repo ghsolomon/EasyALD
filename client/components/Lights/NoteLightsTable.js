@@ -11,6 +11,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { setNoteLightTypeComplete } from '../../store';
 import { parseQueryString } from '../../utils/helpers';
+import { compareChannels } from '../../../utils/helpers';
 
 const columns = [
   {
@@ -18,10 +19,10 @@ const columns = [
     name: 'Ch',
     resizable: true,
     sortable: true,
+    width: 1,
     formatter({ row }) {
       return row.light.Ch;
     },
-    // headerRenderer: () => <span>CHANNNEL</span>,
   },
   {
     key: 'Pur',
@@ -61,6 +62,39 @@ const columns = [
   },
 ];
 
+const extendedColumns = [
+  {
+    key: 'Adr',
+    name: 'Addr',
+    size: 1,
+    resizable: true,
+    sortable: true,
+    formatter({ row }) {
+      return row.light.Adr;
+    },
+  },
+  {
+    key: 'Dm',
+    name: 'Dim',
+    size: 1,
+    resizable: true,
+    sortable: true,
+    formatter({ row }) {
+      return row.light.Dm;
+    },
+  },
+  {
+    key: 'Ckt & C#',
+    name: 'Ckt',
+    size: 1,
+    resizable: true,
+    sortable: true,
+    formatter({ row }) {
+      return row.light['Ckt & C#'];
+    },
+  },
+];
+
 const NoteLightsTable = ({
   className = '',
   positions,
@@ -69,6 +103,8 @@ const NoteLightsTable = ({
   selectedRows,
   setSelectedRows,
   noteTypes = [],
+  hideFilters = false,
+  extended = false,
   ...props
 }) => {
   const typeColumns = noteTypes.map((noteType) => ({
@@ -104,7 +140,9 @@ const NoteLightsTable = ({
     },
   }));
 
-  const [sortColumns, setSortColumns] = useState([]);
+  const [sortColumns, setSortColumns] = useState([
+    { columnKey: 'Ch', direction: 'ASC' },
+  ]);
 
   const onSortColumnsChange = useCallback((sortColumns) => {
     setSortColumns(sortColumns.slice(-1));
@@ -119,13 +157,7 @@ const NoteLightsTable = ({
     switch (columnKey) {
       case 'Ch':
         sortedRows.sort(({ light: a }, { light: b }) =>
-          a.Ch === b.Ch
-            ? 0
-            : a.Ch === null
-            ? 1
-            : b.Ch === null
-            ? -1
-            : a.Ch.localeCompare(b.Ch, 'en', { numeric: true })
+          compareChannels(a.Ch, b.Ch)
         );
         break;
       case 'Pos & U#':
@@ -197,49 +229,56 @@ const NoteLightsTable = ({
 
   return (
     <>
-      <div className="table-filters">
-        <TextField
-          value={filterChannels}
-          onChange={(evt) => setFilterChannels(evt.target.value)}
-          label="Channel"
-          size="small"
-          type="search"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Autocomplete
-          freeSolo
-          disableClearable
-          options={positions.map((position) => position.name)}
-          onInputChange={(evt, val) => setFilterPositions(val)}
-          inputValue={filterPositions}
-          size="small"
-          sx={{ maxWidth: '50%' }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Position"
-              InputProps={{
-                ...params.InputProps,
-                type: 'search',
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-        />
-      </div>
+      {!hideFilters && (
+        <div className="table-filters">
+          <TextField
+            autoComplete="off"
+            value={filterChannels}
+            onChange={(evt) => setFilterChannels(evt.target.value)}
+            label="Channel"
+            size="small"
+            type="search"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Autocomplete
+            freeSolo
+            disableClearable
+            options={positions.map((position) => position.name)}
+            onInputChange={(evt, val) => setFilterPositions(val)}
+            inputValue={filterPositions}
+            size="small"
+            sx={{ maxWidth: '50%' }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Position"
+                InputProps={{
+                  ...params.InputProps,
+                  type: 'search',
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+          />
+        </div>
+      )}
       <DataGrid
         rows={filteredRows}
-        columns={[SelectColumn, ...columns, ...typeColumns]}
+        columns={
+          extended
+            ? [SelectColumn, ...columns, ...extendedColumns, ...typeColumns]
+            : [SelectColumn, ...columns, ...typeColumns]
+        }
         sortColumns={sortColumns}
         onSortColumnsChange={onSortColumnsChange}
         className={`${className} rdg-dark`}
@@ -261,6 +300,9 @@ const mapLightsAndPos = (state) => ({
   noteLights: state.lights.map((light) => ({ light })),
   positions: state.positions,
 });
+const mapPositions = (state) => ({
+  positions: state.positions,
+});
 
 const mapDispatch = (dispatch) => ({
   setNoteLightTypeComplete: (projectId, noteId, lightId, typeId, isComplete) =>
@@ -270,7 +312,11 @@ const mapDispatch = (dispatch) => ({
 });
 
 export default connect(mapTypesAndPos, mapDispatch)(NoteLightsTable);
-export const AddLightsTable = connect(
+export const LightsTable = connect(
   mapLightsAndPos,
+  mapDispatch
+)(NoteLightsTable);
+export const RawLightsTable = connect(
+  mapPositions,
   mapDispatch
 )(NoteLightsTable);

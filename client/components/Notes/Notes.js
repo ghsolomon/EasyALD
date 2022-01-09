@@ -1,9 +1,16 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import NoteCard from './NoteCard';
 import { connect } from 'react-redux';
-import { fetchLights, fetchNotes, fetchTypes } from '../../store';
+import {
+  createNote,
+  fetchLights,
+  fetchNotes,
+  fetchTypes,
+  sortNotes,
+} from '../../store';
 import { Modal } from '@mui/material';
 import { EditNoteModal } from '.';
+import { compareChannels } from '../../../utils/helpers';
 
 class SingleNote {
   constructor(light, note) {
@@ -16,14 +23,14 @@ class SingleNote {
 
 const Notes = (props) => {
   // Manage note updates in local state
-  const SET_NOTES = 'SET_NOTES';
-  const TOGGLE_TYPE = 'TOGGLE_TYPE';
-  const setNotes = (notes) => ({ type: SET_NOTES, notes });
-  const setType = (noteId, typeId) => ({
-    type: TOGGLE_TYPE,
-    noteId,
-    typeId,
-  });
+  // const SET_NOTES = 'SET_NOTES';
+  // const TOGGLE_TYPE = 'TOGGLE_TYPE';
+  // const setNotes = (notes) => ({ type: SET_NOTES, notes });
+  // const setType = (noteId, typeId) => ({
+  //   type: TOGGLE_TYPE,
+  //   noteId,
+  //   typeId,
+  // });
   // const notesReducer = (notes = [], action) => {
   //   switch (action.type) {
   //     case SET_NOTES:
@@ -62,8 +69,16 @@ const Notes = (props) => {
   const handleCloseEditModal = () => setSelectedNote(null);
   const handleEditNote = (note) => setSelectedNote(note);
 
+  const sortByChan = ({ channel: a }, { channel: b }) => {
+    return compareChannels(a, b);
+  };
+
   return (
     <>
+      <button onClick={() => props.createNote(props.match.params.projectId)}>
+        Add
+      </button>
+      <button onClick={() => props.sortNotes(sortByChan)}>Sort by chan</button>
       <div className="notecards-container">
         {props.notes.map((note) => (
           <NoteCard
@@ -90,9 +105,11 @@ const Notes = (props) => {
 const mapState = (state) => ({ notes: state.notes });
 
 const mapDispatch = (dispatch) => ({
+  createNote: (projectId) => dispatch(createNote(projectId)),
   fetchNotes: (projectId) => dispatch(fetchNotes(projectId)),
   fetchTypes: (projectId) => dispatch(fetchTypes(projectId)),
   fetchLights: (projectId) => dispatch(fetchLights(projectId)),
+  sortNotes: (compareFn) => dispatch(sortNotes(compareFn)),
 });
 
 export default connect(mapState, mapDispatch)(Notes);

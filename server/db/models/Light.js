@@ -60,6 +60,15 @@ Light.findMany = async function (projectId, lightIds) {
   return lights;
 };
 
+Light.deleteMany = async function (projectId, lightIds) {
+  await Light.destroy({
+    where: {
+      projectId,
+      id: { [Sequelize.Op.or]: lightIds },
+    },
+  });
+};
+
 // hooks:
 
 // export:

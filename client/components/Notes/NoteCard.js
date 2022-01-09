@@ -19,6 +19,7 @@ import {
   Autocomplete,
   TextField,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
@@ -33,12 +34,35 @@ import {
   updateNote,
   removeLightsFromNote,
   addLightsToNote,
+  deleteNote,
 } from '../../store';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
-import NoteLightsTable, { AddLightsTable } from './NoteLightsTable';
+import { LightsTable, NoteLightsTable } from '../Lights';
 import StatusSelect from './StatusSelect';
+import NoteCardOptions from './NoteCardOptions';
+
+const summaryStyles = {
+  /* Styles applied to the root element. */
+  root: {
+    minHeight: 7 * 4, //8 * 6
+    '&$expanded': {
+      minHeight: 64,
+    },
+  },
+  /* Styles applied to the root element if `expanded={true}`. */
+  expanded: {},
+  /* Styles applied to the children wrapper element. */
+  content: {
+    margin: 0, //12px 0
+    '&$expanded': {
+      margin: '20px 0',
+    },
+  },
+};
+const CompactSummary = withStyles(summaryStyles)(AccordionSummary);
+CompactSummary.muiName = 'AccordionSummary';
 
 const NoteCard = (props) => {
   const positions = [
@@ -84,9 +108,10 @@ const NoteCard = (props) => {
 
   const unsavedChanges =
     description !== props.description ||
-    channel !== (props.channel || '') ||
-    position !== (props.position || '') ||
-    (+posOrder !== props.posOrder && posOrder !== props.posOrder);
+    (!props.noteLights.length &&
+      (channel !== (props.channel || '') ||
+        position !== (props.position || '') ||
+        (+posOrder !== props.posOrder && posOrder !== props.posOrder)));
 
   const handleUpdate = (evt) => {
     evt.preventDefault();
@@ -146,7 +171,7 @@ const NoteCard = (props) => {
                       size="small"
                       inputProps={{
                         ...params.inputProps,
-                        className: 'notecard-positions',
+                        className: 'notecard-positions-field',
                       }}
                     />
                   )}
@@ -161,6 +186,7 @@ const NoteCard = (props) => {
                   onChange={(evt) => setChannel(evt.target.value)}
                   placeholder="Channel"
                   size="small"
+                  inputProps={{ className: 'notecard-channels-field' }}
                 />
               )}
             </div>
@@ -172,6 +198,14 @@ const NoteCard = (props) => {
               <SaveIcon />
             </IconButton>
           )}
+          <NoteCardOptions
+            handleDelete={() =>
+              props.deleteNote({
+                id: props.id,
+                projectId: props.projectId,
+              })
+            }
+          />
         </div>
       </form>
 
@@ -218,13 +252,15 @@ const NoteCard = (props) => {
 
       {/* Note Lights */}
       <div className="notecard-lights">
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Badge badgeContent={props.noteLights.length} color="primary">
+        <Accordion square>
+          <CompactSummary expandIcon={<ExpandMoreIcon />}>
+            {/* <Badge badgeContent={props.noteLights.length} color="primary">
               <LightbulbIcon color="secondary" />
             </Badge>
-            <Typography marginLeft={3}>Lights</Typography>
-          </AccordionSummary>
+            <Typography marginLeft={3}>Lights</Typography> */}
+            {props.noteLights.length} Light
+            {props.noteLights.length !== 1 && 's'}
+          </CompactSummary>
           <AccordionDetails>
             <NoteLightsTable
               className="note-lights-table"
@@ -234,6 +270,7 @@ const NoteCard = (props) => {
               noteId={props.id}
               selectedRows={NLSelectedRows}
               setSelectedRows={setNLSelectedRows}
+              hideFilters
             />
             <div className="table-add-remove-lights">
               <Button
@@ -307,7 +344,7 @@ const NoteCard = (props) => {
       >
         <DialogTitle>Add lights</DialogTitle>
         <DialogContent>
-          <AddLightsTable
+          <LightsTable
             projectId={props.projectId}
             selectedRows={ALSelectedRows}
             setSelectedRows={setALSelectedRows}
@@ -405,6 +442,7 @@ const mapDispatch = (dispatch) => ({
   setTypeStatus: (projectId, noteId, typeId, isComplete) =>
     dispatch(setTypeStatus(projectId, noteId, typeId, isComplete)),
   updateNote: (note) => dispatch(updateNote(note)),
+  deleteNote: (note) => dispatch(deleteNote(note)),
   addLightsToNote: (projectId, noteId, lightIds) =>
     dispatch(addLightsToNote(projectId, noteId, lightIds)),
   removeLightsFromNote: (projectId, noteId, lightIds) =>

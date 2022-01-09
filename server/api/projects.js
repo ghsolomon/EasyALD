@@ -43,6 +43,42 @@ router.get('/:projectId/notes', verifyPermissions, async (req, res, next) => {
  * LIGHTS ROUTES
  */
 
+// POST /api/projects/:projectId/lights
+router.post('/:projectId/lights', verifyPermissions, async (req, res, next) => {
+  const { projectId } = req.params;
+  try {
+    const results = await Promise.all(
+      req.body.map((light) =>
+        Light.findOrCreate({
+          where: { projectId, LW: light.LW },
+          defaults: {
+            ...light,
+            projectId,
+          },
+        })
+      )
+    );
+    res.json(results.map((result) => result[0]));
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/projects/:projectId/lights/delete
+router.post(
+  '/:projectId/lights/delete',
+  verifyPermissions,
+  async (req, res, next) => {
+    const { projectId } = req.params;
+    try {
+      await Light.deleteMany(projectId, req.body);
+      res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // GET /api/projects/:projectId/lights
 router.get('/:projectId/lights', verifyPermissions, async (req, res, next) => {
   try {
@@ -179,8 +215,19 @@ router.delete(
 );
 
 /**
- * SINGLE NOTES ROUTES
+ * NOTES ROUTES
  */
+
+// POST /api/projects/:projectId/notes
+router.post('/:projectId/notes', verifyPermissions, async (req, res, next) => {
+  const { projectId } = req.params;
+  try {
+    const note = await Note.create({ projectId });
+    res.json(await Note.findById(note.id));
+  } catch (error) {
+    next(error);
+  }
+});
 
 // PUT /api/projects/:projectId/notes/:noteId
 router.put(
@@ -204,8 +251,30 @@ router.put(
   }
 );
 
+// DELETE /api/projects/:projectId/notes/:noteId
+router.delete(
+  '/:projectId/notes/:noteId',
+  verifyPermissions,
+  async (req, res, next) => {
+    const { projectId, noteId } = req.params;
+    try {
+      const note = await Note.findById(noteId);
+      if (!note || note.projectId !== +projectId) {
+        const error = new Error('Not found');
+        error.status = 404;
+        next(error);
+      } else {
+        await note.destroy();
+        res.sendStatus(204);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 /**
- * SINGLE NOTES TYPES ROUTES
+ * NOTES TYPES ROUTES
  */
 
 // POST /api/projects/:projectId/notes/:noteId/types
@@ -288,7 +357,7 @@ router.delete(
 );
 
 /**
- * NOTE LIGHT ROUTES
+ * NOTE LIGHTS ROUTES
  */
 
 // POST /api/projects/:projectId/notes/:noteId/lights

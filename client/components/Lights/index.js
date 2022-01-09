@@ -1,3 +1,8 @@
-import LightsTable from './LightsTable';
+import NoteLightsTable, {
+  LightsTable,
+  RawLightsTable,
+} from './NoteLightsTable';
+import Lights from './Lights';
+import './styles.css';
 
-export { LightsTable };
+export { Lights, LightsTable, NoteLightsTable, RawLightsTable };

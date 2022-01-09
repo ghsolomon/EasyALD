@@ -4,6 +4,7 @@ const { NoteLight, NoteType } = require('./NoteLight_NoteType');
 const Light = require('./Light');
 const Type = require('./Type');
 const NoteLightType = require('./NoteLightType');
+const compareChannels = require('../../../utils/helpers').compareChannels;
 
 // model definition:
 const Note = db.define('note', {
@@ -13,9 +14,48 @@ const Note = db.define('note', {
     defaultValue: 'Active',
     allowNull: false,
   },
-  channel: Sequelize.STRING,
-  position: Sequelize.STRING,
-  posOrder: Sequelize.INTEGER,
+  channel: {
+    type: Sequelize.STRING,
+    get() {
+      // If has lights attached, get lowest value channel
+      if (this.noteLights && this.noteLights.length) {
+        return this.noteLights.reduce(
+          (minChan, { light }) =>
+            compareChannels(minChan, light.Ch) === 1 ? light.Ch : minChan,
+          null
+        );
+      } else {
+        return this.dataValues.channel;
+      }
+    },
+  },
+  position: { type: Sequelize.STRING },
+  posOrder: {
+    type: Sequelize.INTEGER,
+    get() {
+      if (this.noteLights && this.noteLights.length) {
+        return this.noteLights.reduce(
+          (minPos, { light }) => Math.min(minPos, light.PosOrd),
+          Infinity
+        );
+      } else {
+        return this.dataValues.posOrder;
+      }
+    },
+    LtOrder: {
+      type: Sequelize.INTEGER,
+      get() {
+        if (this.noteLights && this.noteLights.length) {
+          return this.noteLights.reduce(
+            (minLt, { light }) => Math.min(minLt, light.LtOrd),
+            Infinity
+          );
+        } else {
+          return 0;
+        }
+      },
+    },
+  },
 });
 
 // instance methods:

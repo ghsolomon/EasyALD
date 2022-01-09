@@ -1,0 +1,35 @@
+.lights-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0.5rem;
+}
+
+.lights-header {
+  margin-bottom: 1rem;
+}
+
+.lights-table {
+  flex-grow: 1;
+}
+
+.lights-footer {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.note-lights-table {
+  max-height: 125px;
+}
+
+.table-add-remove-lights {}
+
+.table-filters {
+  display: flex;
+  gap: 5px;
+  padding: 5px 0;
+}
+
+.table-filters>* {
+  width: 40%;
+}

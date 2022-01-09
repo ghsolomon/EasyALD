@@ -63,16 +63,27 @@
 
 .notecard-positions {
   font-size: large;
-  font-weight:800 !important;
-
+  font-weight:800;
 }
+
+.notecard-positions-field {
+  font-size: large !important;
+  font-weight:800 !important;
+  padding: 0 !important;
+}
+
+
 
 .notecard-channels {
 
 }
 
-.note-lights-table {
-  max-height: 125px;
+.notecard-channels-field {
+  padding: 0.5rem !important;
+}
+
+.notecard-note-description {
+  font-size: medium;
 }
 
 .notecard-types {
@@ -83,17 +94,7 @@
   padding: 0.5rem;
 }
 
-.table-add-remove-lights {}
 
-.table-filters {
-  display: flex;
-  gap: 5px;
-  padding: 5px 0;
-}
-
-.table-filters>* {
-  width: 40%;
-}
 
 
 

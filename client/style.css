@@ -21,3 +21,18 @@ form div {
   margin: 1em;
   display: inline-block;
 } */
+
+html {
+  font-size: 14px;
+}
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+#content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
