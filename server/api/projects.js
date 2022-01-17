@@ -26,6 +26,7 @@ const verifyPermissions = async (req, res, next) => {
   }
 };
 
+// GET /api/projects
 router.get('/', async (req, res, next) => {
   try {
     if (!req.user) {
@@ -36,6 +37,15 @@ router.get('/', async (req, res, next) => {
       const projects = await req.user.getProjects();
       res.json(projects);
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET /api/projects/:projectId
+router.get('/:projectId', verifyPermissions, async (req, res, next) => {
+  try {
+    res.json(await Project.findByPk(req.params.projectId));
   } catch (error) {
     next(error);
   }

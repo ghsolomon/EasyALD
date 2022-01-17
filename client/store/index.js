@@ -8,6 +8,7 @@ import types from './types';
 import notes from './notes';
 import positions from './positions';
 import projects from './projects';
+import activeProject from './activeProject';
 
 const reducer = combineReducers({
   auth,
@@ -16,6 +17,7 @@ const reducer = combineReducers({
   notes,
   positions,
   projects,
+  activeProject,
 });
 
 const middleware = composeWithDevTools(
@@ -30,3 +32,4 @@ export * from './lights';
 export * from './types';
 export * from './notes';
 export * from './projects';
+export * from './activeProject';

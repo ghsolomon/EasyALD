@@ -7,7 +7,7 @@ import { Lights } from './components/Lights';
 import { Notes } from './components/Notes';
 import { TypesForm } from './components/Types';
 import { getUser } from './store';
-import { Projects } from './components/Projects';
+import { FetchProject, Projects } from './components/Projects';
 
 class Routes extends React.Component {
   componentDidMount() {
@@ -21,7 +21,7 @@ class Routes extends React.Component {
       <div id="content">
         {isLoggedIn ? (
           <>
-            <Route path="/projects/:projectId">PROJECT BAR HERE</Route>
+            <Route path="/projects/:projectId" component={FetchProject} />
             <Switch>
               <Route exact path="/projects" component={Projects} />
               <Route path="/home" component={Home} />

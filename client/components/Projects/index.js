@@ -1,3 +1,4 @@
 import Projects from './Projects';
+import FetchProject from './FetchProject';
 
-export { Projects };
+export { Projects, FetchProject };
