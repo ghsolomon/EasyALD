@@ -379,7 +379,7 @@ const NoteCard = (props) => {
       >
         <DialogTitle>Set note types</DialogTitle>
         <DialogContent>
-          <div className="select-types">
+          <div className="notecard-select-types">
             {props.types.map((type) => (
               <ToggleButton
                 key={type.id}

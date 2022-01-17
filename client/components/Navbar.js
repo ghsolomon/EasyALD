@@ -5,7 +5,7 @@ import { logout } from '../store';
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
   <div>
-    <h1>GS-App-Template</h1>
+    <h1>Easy ALD</h1>
     <nav>
       {isLoggedIn ? (
         <div>
@@ -13,6 +13,7 @@ const Navbar = ({ handleClick, isLoggedIn }) => (
           <Link to="/home">Home</Link>
           <Link to="/projects/1/lights">Lights</Link>
           <Link to="/projects/1/notes">Notes</Link>
+          <Link to="/projects/1/types">Types</Link>
           <a href="#" onClick={handleClick}>
             Logout
           </a>

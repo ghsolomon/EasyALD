@@ -1,3 +1,9 @@
+.notes-container {}
+
+.notes-header {
+  margin: 1rem;
+}
+
 .dialog-container {
   position: absolute;
   inset: 0;
@@ -137,7 +143,7 @@
   top: 0;
   transform: translate(50%,-50%);
 } */
-.select-types {
+.notecard-select-types {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

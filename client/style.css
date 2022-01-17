@@ -1,38 +1,32 @@
-/* body {
-  background-color: #222222;
-  color: white;
-  font-family: 'Roboto', sans-serif;
-}
-
-a {
-  text-decoration: none;
-}
-
-label {
-  display: block;
-}
-
-nav a {
-  display: inline-block;
-  margin: 1em;
-}
-
-form div {
-  margin: 1em;
-  display: inline-block;
-} */
-
 html {
   font-size: 14px;
 }
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
 #app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 0;
 }
+
 #content {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+
+nav a {
+  color: white;
+  display: inline-block;
+  margin: 1em;
+  text-decoration: none;
+}
+
+.home-container {
+  margin: 1rem;
+  text-align: center;
 }

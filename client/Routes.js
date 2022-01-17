@@ -4,8 +4,10 @@ import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { Login, Signup } from './components/AuthForm';
 import Home from './components/Home';
 import { Lights } from './components/Lights';
-import { TypesForm, Notes } from './components/Notes';
+import { Notes } from './components/Notes';
+import { TypesForm } from './components/Types';
 import { getUser } from './store';
+import { Projects } from './components/Projects';
 
 class Routes extends React.Component {
   componentDidMount() {
@@ -18,13 +20,17 @@ class Routes extends React.Component {
     return (
       <div id="content">
         {isLoggedIn ? (
-          <Switch>
-            <Route path="/home" component={Home} />
-            <Route path="/projects/:projectId/lights" component={Lights} />
-            <Route path="/projects/:projectId/types" component={TypesForm} />
-            <Route path="/projects/:projectId/notes" component={Notes} />
-            <Redirect to="/home" />
-          </Switch>
+          <>
+            <Route path="/projects/:projectId">PROJECT BAR HERE</Route>
+            <Switch>
+              <Route exact path="/projects" component={Projects} />
+              <Route path="/home" component={Home} />
+              <Route path="/projects/:projectId/lights" component={Lights} />
+              <Route path="/projects/:projectId/types" component={TypesForm} />
+              <Route path="/projects/:projectId/notes" component={Notes} />
+              <Redirect to="/home" />
+            </Switch>
+          </>
         ) : (
           <Switch>
             <Route path="/" exact component={Login} />

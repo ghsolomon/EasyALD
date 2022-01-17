@@ -3,6 +3,12 @@ import { connect } from 'react-redux';
 import { fetchTypes, addType, updateTypes, deleteType } from '../../store';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import SaveIcon from '@mui/icons-material/Save';
+
+import { Button, IconButton, TextField, Typography } from '@mui/material';
 
 const reducer = (types = [], payload) => {
   if (Array.isArray(payload)) {
@@ -58,9 +64,21 @@ const TypesForm = (props) => {
     setNewType({ ...newType, [evt.target.name]: evt.target.value });
   };
 
+  const unsavedChanges = JSON.stringify(types) !== JSON.stringify(props.types);
+
   return (
-    <>
-      <form onSubmit={handleSaveChanges}>
+    <div className="types-container">
+      <form className="types-form" onSubmit={handleSaveChanges}>
+        {unsavedChanges && (
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={!unsavedChanges}
+            startIcon={<SaveIcon />}
+          >
+            Save changes
+          </Button>
+        )}
         <DragDropContext onDragEnd={handleOnDragEnd}>
           <Droppable droppableId="types">
             {(provided) => (
@@ -73,12 +91,14 @@ const TypesForm = (props) => {
                   >
                     {(provided) => (
                       <fieldset
+                        className="type-card"
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
                         <DragHandleIcon />
-                        <input
+                        <TextField
+                          label="name"
                           type="text"
                           name="name"
                           value={type.name}
@@ -89,7 +109,9 @@ const TypesForm = (props) => {
                             })
                           }
                         />
+
                         <input
+                          className="type-color-picker"
                           type="color"
                           name="color"
                           value={type.color}
@@ -100,12 +122,13 @@ const TypesForm = (props) => {
                             })
                           }
                         />
-                        <button
+                        <IconButton
                           type="button"
                           onClick={() => props.deleteType(type)}
+                          variant="contained"
                         >
-                          Delete
-                        </button>
+                          <DeleteIcon />
+                        </IconButton>
                       </fieldset>
                     )}
                   </Draggable>
@@ -115,31 +138,29 @@ const TypesForm = (props) => {
             )}
           </Droppable>
         </DragDropContext>
-        <button
-          type="submit"
-          disabled={JSON.stringify(types) === JSON.stringify(props.types)}
-        >
-          Save changes
-        </button>
       </form>
       <form onSubmit={handleAddType}>
-        <fieldset>
-          <input
+        <fieldset className="type-card">
+          <AddTaskIcon sx={{ visibility: 'hidden' }} />
+          <TextField
             type="text"
             name="name"
             onChange={handleChangeNewType}
             value={newType.name}
           />
           <input
+            className="type-color-picker"
             type="color"
             name="color"
             onChange={handleChangeNewType}
             value={newType.color}
           />
-          <button type="submit">Add</button>
+          <IconButton type="submit">
+            <AddIcon />
+          </IconButton>
         </fieldset>
       </form>
-    </>
+    </div>
   );
 };
 

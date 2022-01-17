@@ -5,8 +5,9 @@ export const Home = (props) => {
   const { username } = props;
 
   return (
-    <div>
-      <h3>Welcome, {username}</h3>
+    <div className="home-container">
+      <h3>Welcome to EasyALD, {username}!</h3>
+      <p>Use the nav-bar above to get started!</p>
     </div>
   );
 };

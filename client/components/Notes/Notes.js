@@ -8,9 +8,10 @@ import {
   fetchTypes,
   sortNotes,
 } from '../../store';
-import { Modal } from '@mui/material';
+import { Button, Modal } from '@mui/material';
 import { EditNoteModal } from '.';
 import { compareChannels } from '../../../utils/helpers';
+import NotesMenu from './NotesMenu';
 
 class SingleNote {
   constructor(light, note) {
@@ -75,29 +76,35 @@ const Notes = (props) => {
 
   return (
     <>
-      <button onClick={() => props.createNote(props.match.params.projectId)}>
-        Add
-      </button>
-      <button onClick={() => props.sortNotes(sortByChan)}>Sort by chan</button>
-      <div className="notecards-container">
-        {props.notes.map((note) => (
-          <NoteCard
-            key={note.id}
-            {...note}
-            handleEditNote={() => handleEditNote(note)}
-          />
-        ))}
-      </div>
-      <Modal
-        open={!!selectedNote}
-        onClose={handleCloseEditModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <div>
-          <EditNoteModal {...selectedNote} />
+      <div className="notes-container">
+        <div className="notes-header">
+          <Button onClick={() => props.sortNotes(sortByChan)}>
+            Sort by chan
+          </Button>
         </div>
-      </Modal>
+        <div className="notecards-container">
+          {props.notes.map((note) => (
+            <NoteCard
+              key={note.id}
+              {...note}
+              handleEditNote={() => handleEditNote(note)}
+            />
+          ))}
+        </div>
+        <Modal
+          open={!!selectedNote}
+          onClose={handleCloseEditModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div>
+            <EditNoteModal {...selectedNote} />
+          </div>
+        </Modal>
+      </div>
+      <NotesMenu
+        handleNewNote={() => props.createNote(props.match.params.projectId)}
+      />
     </>
   );
 };

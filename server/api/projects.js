@@ -26,6 +26,21 @@ const verifyPermissions = async (req, res, next) => {
   }
 };
 
+router.get('/', async (req, res, next) => {
+  try {
+    if (!req.user) {
+      const error = new Error('Must be logged in to see projects');
+      error.status = 401;
+      next(error);
+    } else {
+      const projects = await req.user.getProjects();
+      res.json(projects);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 /**
  * ALL NOTES ROUTES
  */

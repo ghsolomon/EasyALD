@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
   IconButton,
   Menu,
@@ -27,6 +28,12 @@ const NoteCardOptions = ({ handleDelete }) => {
         <MoreVertIcon />
       </IconButton>
       <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
+        <MenuItem>
+          <ListItemIcon>
+            <ContentCopyIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Duplicate</ListItemText>
+        </MenuItem>
         <MenuItem
           onClick={() => {
             handleClose();
@@ -34,7 +41,7 @@ const NoteCardOptions = ({ handleDelete }) => {
           }}
         >
           <ListItemIcon>
-            <DeleteIcon fontSize="small" />
+            <DeleteIcon fontSize="small" color="error" />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
