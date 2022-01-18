@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { fetchProject } from '../../store';
 
-const FetchProject = ({ fetchProject, match }) => {
+const FetchProject = ({ activeProject, fetchProject, match }) => {
   useEffect(
     () => fetchProject(match.params.projectId),
     [match.params.projectId]

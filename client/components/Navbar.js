@@ -20,6 +20,9 @@ import { logout, setActiveProject } from '../store';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 const Navbar = ({ handleSignout, isLoggedIn, activeProject }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -61,35 +64,39 @@ const Navbar = ({ handleSignout, isLoggedIn, activeProject }) => {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            <ListItemButton
-              component={Link}
-              to={`/projects/${activeProject.id}/notes`}
-            >
-              <ListItemIcon>
-                <AccountCircle />
-              </ListItemIcon>
-              <ListItemText primary="Notes" />
-            </ListItemButton>
+            {activeProject.id && (
+              <>
+                <ListItemButton
+                  component={Link}
+                  to={`/projects/${activeProject.id}/notes`}
+                >
+                  <ListItemIcon>
+                    <StickyNote2Icon />
+                  </ListItemIcon>
+                  <ListItemText primary="Notes" />
+                </ListItemButton>
 
-            <ListItemButton
-              component={Link}
-              to={`/projects/${activeProject.id}/lights`}
-            >
-              <ListItemIcon>
-                <AccountCircle />
-              </ListItemIcon>
-              <ListItemText primary="Lights" />
-            </ListItemButton>
+                <ListItemButton
+                  component={Link}
+                  to={`/projects/${activeProject.id}/lights`}
+                >
+                  <ListItemIcon>
+                    <LightbulbIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Lights" />
+                </ListItemButton>
 
-            <ListItemButton
-              component={Link}
-              to={`/projects/${activeProject.id}/types`}
-            >
-              <ListItemIcon>
-                <AccountCircle />
-              </ListItemIcon>
-              <ListItemText primary="Types" />
-            </ListItemButton>
+                <ListItemButton
+                  component={Link}
+                  to={`/projects/${activeProject.id}/types`}
+                >
+                  <ListItemIcon>
+                    <LocalOfferIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Types" />
+                </ListItemButton>
+              </>
+            )}
           </List>
         </Box>
       </Drawer>
