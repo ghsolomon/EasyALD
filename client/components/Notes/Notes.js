@@ -104,6 +104,7 @@ const Notes = (props) => {
       </div>
       <NotesMenu
         handleNewNote={() => props.createNote(props.match.params.projectId)}
+        notes={props.notes}
       />
     </>
   );

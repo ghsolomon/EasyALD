@@ -1,30 +1,44 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
 import { SpeedDial, Box, SpeedDialIcon, SpeedDialAction } from '@mui/material';
 
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PrintIcon from '@mui/icons-material/Print';
+import { PrintNotes } from '../Printouts';
 
-export default function NotesMenu({ handleNewNote }) {
-  const actions = [
-    { icon: <NoteAddIcon />, name: 'New Note', onClick: handleNewNote },
-    { icon: <PrintIcon />, name: 'Print' },
-  ];
+export default function NotesMenu({ handleNewNote, notes }) {
+  const componentRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
   return (
-    <Box sx={{ height: 320, transform: 'translateZ(0px)', flexGrow: 1 }}>
-      <SpeedDial
-        ariaLabel="Menu"
-        sx={{ position: 'absolute', bottom: 16, right: 16 }}
-        icon={<SpeedDialIcon />}
-      >
-        {actions.map((action) => (
+    <>
+      <div style={{ display: 'none' }}>
+        <PrintNotes ref={componentRef} notes={notes} />
+      </div>
+
+      <Box sx={{ height: 320, transform: 'translateZ(0px)', flexGrow: 1 }}>
+        <SpeedDial
+          ariaLabel="Menu"
+          sx={{ position: 'absolute', bottom: 16, right: 16 }}
+          icon={<SpeedDialIcon />}
+        >
           <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            onClick={action.onClick}
+            key="New Note"
+            icon={<NoteAddIcon />}
+            tooltipTitle="New Note"
+            onClick={handleNewNote}
           />
-        ))}
-      </SpeedDial>
-    </Box>
+          <SpeedDialAction
+            key="Print"
+            icon={<PrintIcon />}
+            tooltipTitle="Print"
+            onClick={handlePrint}
+          />
+        </SpeedDial>
+      </Box>
+    </>
   );
 }
