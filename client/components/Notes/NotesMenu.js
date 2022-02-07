@@ -1,6 +1,9 @@
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { SpeedDial, Box, SpeedDialIcon, SpeedDialAction } from '@mui/material';
+import { SpeedDial, Box, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PrintIcon from '@mui/icons-material/Print';
@@ -23,7 +26,12 @@ export default function NotesMenu({ handleNewNote, notes }) {
         <SpeedDial
           ariaLabel="Menu"
           sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          icon={<SpeedDialIcon />}
+          icon={
+            <SpeedDialIcon
+              icon={<MoreHorizIcon />}
+              openIcon={<MoreVertIcon />}
+            />
+          }
         >
           <SpeedDialAction
             key="New Note"
