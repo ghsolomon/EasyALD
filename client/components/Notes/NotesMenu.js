@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { SpeedDial, Box, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -22,31 +22,26 @@ export default function NotesMenu({ handleNewNote, notes }) {
         <PrintNotes ref={componentRef} notes={notes} />
       </div>
 
-      <Box sx={{ height: 320, transform: 'translateZ(0px)', flexGrow: 1 }}>
-        <SpeedDial
-          ariaLabel="Menu"
-          sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          icon={
-            <SpeedDialIcon
-              icon={<MoreHorizIcon />}
-              openIcon={<MoreVertIcon />}
-            />
-          }
-        >
-          <SpeedDialAction
-            key="New Note"
-            icon={<NoteAddIcon />}
-            tooltipTitle="New Note"
-            onClick={handleNewNote}
-          />
-          <SpeedDialAction
-            key="Print"
-            icon={<PrintIcon />}
-            tooltipTitle="Print"
-            onClick={handlePrint}
-          />
-        </SpeedDial>
-      </Box>
+      <SpeedDial
+        ariaLabel="Menu"
+        sx={{ position: 'fixed', bottom: '1%', right: '1%' }}
+        icon={
+          <SpeedDialIcon icon={<MoreHorizIcon />} openIcon={<MoreVertIcon />} />
+        }
+      >
+        <SpeedDialAction
+          key="New Note"
+          icon={<NoteAddIcon />}
+          tooltipTitle="New Note"
+          onClick={handleNewNote}
+        />
+        <SpeedDialAction
+          key="Print"
+          icon={<PrintIcon />}
+          tooltipTitle="Print"
+          onClick={handlePrint}
+        />
+      </SpeedDial>
     </>
   );
 }
