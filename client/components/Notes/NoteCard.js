@@ -128,7 +128,9 @@ const NoteCard = (props) => {
   };
 
   return (
-    <div className="notecard">
+    <div
+      className={`notecard${unsavedChanges ? ' notecard-unsaved-changes' : ''}`}
+    >
       {/* Note Header */}
       <form className="notecard-header" onSubmit={handleUpdate}>
         <div className="notecard-header-main">
@@ -195,7 +197,7 @@ const NoteCard = (props) => {
         <div className="notecard-header-button">
           {unsavedChanges && (
             <IconButton type="submit">
-              <SaveIcon />
+              <SaveIcon htmlColor="#FF0000" />
             </IconButton>
           )}
           <NoteCardOptions

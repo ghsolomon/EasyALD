@@ -41,6 +41,10 @@
   width: 90%;
 }
 
+.notecard-unsaved-changes {
+  border-color: #FF0000;
+}
+
 .notecard-header {
   background-color: #444444;
   border-radius: 8px 8px 0 0;
