@@ -11,7 +11,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { setNoteLightTypeComplete } from '../../store';
 import { parseQueryString } from '../../utils/helpers';
-import { compareChannels } from '../../../utils/helpers';
+import { compareChannels, comparePositions } from '../../../utils/helpers';
 
 const columns = [
   {
@@ -161,13 +161,7 @@ const NoteLightsTable = ({
         );
         break;
       case 'Pos & U#':
-        sortedRows.sort((a, b) =>
-          a.light.PosOrd > b.light.PosOrd
-            ? 1
-            : a.light.PosOrd < b.light.PosOrd
-            ? -1
-            : a.light.LtOrd - b.light.LtOrd
-        );
+        sortedRows.sort(({ light: a }, { light: b }) => comparePositions(a, b));
         break;
       default:
         sortedRows.sort(({ light: a }, { light: b }) =>

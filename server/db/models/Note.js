@@ -30,7 +30,7 @@ const Note = db.define('note', {
     },
   },
   position: { type: Sequelize.STRING },
-  posOrder: {
+  PosOrd: {
     type: Sequelize.INTEGER,
     get() {
       if (this.noteLights && this.noteLights.length) {
@@ -39,10 +39,10 @@ const Note = db.define('note', {
           Infinity
         );
       } else {
-        return this.dataValues.posOrder;
+        return this.dataValues.PosOrd;
       }
     },
-    LtOrder: {
+    LtOrd: {
       type: Sequelize.INTEGER,
       get() {
         if (this.noteLights && this.noteLights.length) {

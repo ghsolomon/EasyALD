@@ -21,8 +21,8 @@ export const fetchLights = (projectId) => async (dispatch) => {
       positionsObj[light.PosOrd] = light.Pos;
     });
     const positions = Object.keys(positionsObj)
-      .map((posOrder) => ({ name: positionsObj[posOrder], posOrder }))
-      .sort((a, b) => a.posOrder - b.posOrder)
+      .map((PosOrd) => ({ name: positionsObj[PosOrd], PosOrd }))
+      .sort((a, b) => a.PosOrd - b.PosOrd)
       .filter((pos) => pos.name !== null);
     dispatch(setPositions(positions));
   } catch (error) {

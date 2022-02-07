@@ -7,4 +7,7 @@ const compareChannels = (a, b) =>
     ? -1
     : a.localeCompare(b, 'en', { numeric: true });
 
-module.exports = { compareChannels };
+const comparePositions = (a, b) =>
+  a.PosOrd > b.PosOrd ? 1 : a.PosOrd < b.PosOrd ? -1 : a.LtOrd - b.LtOrd;
+
+module.exports = { compareChannels, comparePositions };

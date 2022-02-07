@@ -8,10 +8,11 @@ import {
   fetchTypes,
   sortNotes,
 } from '../../store';
-import { Button, Modal } from '@mui/material';
+import { Button, ButtonGroup, Modal } from '@mui/material';
 import { EditNoteModal } from '.';
-import { compareChannels } from '../../../utils/helpers';
+import { compareChannels, comparePositions } from '../../../utils/helpers';
 import NotesMenu from './NotesMenu';
+import SortIcon from '@mui/icons-material/Sort';
 
 class SingleNote {
   constructor(light, note) {
@@ -74,13 +75,28 @@ const Notes = (props) => {
     return compareChannels(a, b);
   };
 
+  const sortByPos = (a, b) => {
+    return comparePositions(a, b);
+  };
+
   return (
     <>
       <div className="notes-container">
         <div className="notes-header">
-          <Button onClick={() => props.sortNotes(sortByChan)}>
-            Sort by chan
-          </Button>
+          <ButtonGroup>
+            <Button
+              startIcon={<SortIcon />}
+              onClick={() => props.sortNotes(sortByChan)}
+            >
+              Channel
+            </Button>
+            <Button
+              startIcon={<SortIcon />}
+              onClick={() => props.sortNotes(sortByPos)}
+            >
+              Position
+            </Button>
+          </ButtonGroup>
         </div>
         <div className="notecards-container">
           {props.notes.map((note) => (

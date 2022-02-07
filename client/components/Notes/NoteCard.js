@@ -96,13 +96,13 @@ const NoteCard = (props) => {
 
   const [channel, setChannel] = useState('');
   const [position, setPosition] = useState('');
-  const [posOrder, setPosOrder] = useState(null);
+  const [PosOrd, setPosOrd] = useState(null);
   const [description, setDescription] = useState(null);
 
   useEffect(() => {
     setChannel(props.channel || '');
     setPosition(props.position || '');
-    setPosOrder(props.posOrder);
+    setPosOrd(props.PosOrd);
     setDescription(props.description);
   }, []);
 
@@ -111,7 +111,7 @@ const NoteCard = (props) => {
     (!props.noteLights.length &&
       (channel !== (props.channel || '') ||
         position !== (props.position || '') ||
-        (+posOrder !== props.posOrder && posOrder !== props.posOrder)));
+        (+PosOrd !== props.PosOrd && PosOrd !== props.PosOrd)));
 
   const handleUpdate = (evt) => {
     evt.preventDefault();
@@ -121,7 +121,7 @@ const NoteCard = (props) => {
         projectId: props.projectId,
         channel,
         position,
-        posOrder,
+        PosOrd,
         description,
       });
     }
@@ -158,9 +158,9 @@ const NoteCard = (props) => {
                       (position) => position.name === value
                     );
                     if (matchingPosition) {
-                      setPosOrder(matchingPosition.posOrder);
+                      setPosOrd(matchingPosition.PosOrd);
                     } else {
-                      setPosOrder(null);
+                      setPosOrd(null);
                     }
                   }}
                   inputValue={position}
