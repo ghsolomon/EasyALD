@@ -12,6 +12,7 @@ import { Button, ButtonGroup, Modal } from '@mui/material';
 import { EditNoteModal } from '.';
 import { compareChannels, comparePositions } from '../../../utils/helpers';
 import NotesMenu from './NotesMenu';
+import TypeFilter from './TypeFilter';
 import SortIcon from '@mui/icons-material/Sort';
 
 class SingleNote {
@@ -97,6 +98,7 @@ const Notes = (props) => {
               Position
             </Button>
           </ButtonGroup>
+          <TypeFilter />
         </div>
         <div className="notecards-container">
           {props.notes.map((note) => (

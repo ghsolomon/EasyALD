@@ -7,7 +7,7 @@ import { Lights } from './components/Lights';
 import { Notes } from './components/Notes';
 import { TypesForm } from './components/Types';
 import { getUser } from './store';
-import { FetchProject, Projects } from './components/Projects';
+import { FetchProject, Projects, ProjectForm } from './components/Projects';
 
 class Routes extends React.Component {
   componentDidMount() {
@@ -25,6 +25,7 @@ class Routes extends React.Component {
             <Switch>
               <Route exact path="/projects" component={Projects} />
               <Route path="/home" component={Home} />
+              <Route path="/new-project" component={ProjectForm} />
               <Route path="/projects/:projectId/lights" component={Lights} />
               <Route path="/projects/:projectId/types" component={TypesForm} />
               <Route path="/projects/:projectId/notes" component={Notes} />

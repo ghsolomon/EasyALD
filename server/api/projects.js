@@ -42,6 +42,23 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// POST /api/projects
+router.post('/', async (req, res, next) => {
+  try {
+    if (!req.user) {
+      const error = new Error('Must be logged in to add project');
+      error.status = 401;
+      next(error);
+    } else {
+      const project = await Project.create({ name: req.body.name });
+      await req.user.addProject(project);
+      res.json(project);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 // GET /api/projects/:projectId
 router.get('/:projectId', verifyPermissions, async (req, res, next) => {
   try {
